@@ -1,4 +1,6 @@
-﻿namespace Mercury.API.Models
+﻿using System.Collections.Concurrent;
+
+namespace Mercury.API.Models
 {
     public class Clans
     {
@@ -14,7 +16,7 @@
     public class Room
     {
         public Guid RoomId { get; set; }
-        public List<Player> Player { get; set; }
+        public BlockingCollection<Player> Players { get; set; }
         public List<Scores> Scores { get; set; }
         public string GroupSocketId { get; set; }
     }
@@ -24,6 +26,5 @@
         public string ConnectionId { get; set; }
         public Guid PlayerId { get; set; }
         public string GroupSocketId { get; set; }
-
     }
 }
