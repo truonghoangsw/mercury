@@ -1,33 +1,26 @@
 ﻿using Mercury.API.Data;
 using Mercury.API.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System.Numerics;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Mercury.API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UserController : ControllerBase
+    public class UserHub : Hub
     {
-        // GET: api/<UserController>
-        [HttpGet]
-        public IEnumerable<Player> Get()
+        public async Task GetUsers()
         {
-            return (IEnumerable<Player>)DataMemory.Users;
+            await Clients.Caller.SendAsync("GetUsers", DataMemory.Users);
         }
-
-        // GET api/<UserController>/5
-        [HttpGet("{id}")]
-        public Player? Get(Guid id)
+     
+        public async Task GetUsersById(Guid id)
         {
-            return DataMemory.Users.FirstOrDefault(p=>p.PlayerId == id);
+            await Clients.Caller.SendAsync("GetUsers", DataMemory.Users.FirstOrDefault(p => p.PlayerId == id));
         }
-
-        // POST api/<UserController>
-        [HttpPost]
-        public Player Post([FromBody] string userName)
+     
+        public async Task AddUser([FromBody] string userName)
         {
             var player = new Player
             {
@@ -35,19 +28,17 @@ namespace Mercury.API.Controllers
                 PlayerId = Guid.NewGuid(),
             };
             DataMemory.Users.Add(player);
-            return player;
+            await Clients.Caller.SendAsync("AddUser", player);
         }
 
-        
-        // DELETE api/<UserController>/5
-        [HttpDelete("{id}")]
-        public void Delete(Guid id)
+        public async Task DeleteUser(Guid id)
         {
             var data = DataMemory.Users.FirstOrDefault(p => p.PlayerId == id);
             if(data != null)
             {
                 DataMemory.Users.Remove(data);
             }
+            await Clients.Caller.SendAsync("DeleteUser", true);
         }
     }
 }

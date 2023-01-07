@@ -1,3 +1,4 @@
+using Mercury.API.Controllers;
 using Mercury.API.Data;
 using Mercury.API.SignIrServices;
 using Microsoft.AspNetCore.Http.Connections;
@@ -11,7 +12,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
-builder.Services.AddSingleton<DataMemory>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -27,6 +27,11 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<HubSockets>("/sockets", options =>
+{
+    options.Transports = HttpTransportType.WebSockets;
+}
+);
+app.MapHub<UserHub>("/user", options =>
 {
     options.Transports = HttpTransportType.WebSockets;
 }
