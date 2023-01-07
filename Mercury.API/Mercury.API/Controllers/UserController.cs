@@ -1,6 +1,7 @@
 ﻿using Mercury.API.Data;
 using Mercury.API.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Numerics;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,27 +20,34 @@ namespace Mercury.API.Controllers
 
         // GET api/<UserController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public Player? Get(Guid id)
         {
-            return "value";
+            return DataMemory.Users.FirstOrDefault(p=>p.PlayerId == id);
         }
 
         // POST api/<UserController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public Player Post([FromBody] string userName)
         {
+            var player = new Player
+            {
+                Name = userName,
+                PlayerId = Guid.NewGuid(),
+            };
+            DataMemory.Users.Add(player);
+            return player;
         }
 
-        // PUT api/<UserController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
+        
         // DELETE api/<UserController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public void Delete(Guid id)
         {
+            var data = DataMemory.Users.FirstOrDefault(p => p.PlayerId == id);
+            if(data != null)
+            {
+                DataMemory.Users.Remove(data);
+            }
         }
     }
 }
