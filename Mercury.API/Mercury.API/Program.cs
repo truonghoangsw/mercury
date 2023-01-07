@@ -25,7 +25,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.MapControllers();
+//app.MapControllers();
 app.MapHub<HubSockets>("/all", options =>
 {
     options.Transports = HttpTransportType.WebSockets;
