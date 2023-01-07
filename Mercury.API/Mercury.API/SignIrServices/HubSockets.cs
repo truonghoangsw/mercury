@@ -7,23 +7,41 @@ namespace Mercury.API.SignIrServices
 {
     public partial class HubSockets : Hub
     {
+        public async Task CreateRoom(EnterRoomModel model)
+        {
+            if (!DataMemory.Users.TryGetValue(model.UserId, out var player))
+            {
+                return;
+            }
+
+            var room = Room.Create();
+
+            room.AddPlayer(player);
+
+            await Groups.AddToGroupAsync(Context.ConnectionId, model.RoomId.ToString());
+
+            await Clients.Group(room.RoomId.ToString())
+                .SendAsync(nameof(CreateRoom), room);
+        }
+
         public async Task EnterRoom(EnterRoomModel model)
         {
-            
-            if (!DataMemory.Users.TryGetValue(model.UserId, out var player)){
-                return ;
+            if (!DataMemory.Users.TryGetValue(model.UserId, out var player))
+            {
+                return;
             }
 
             if (!DataMemory.Rooms.TryGetValue(model.RoomId, out var room))
             {
-                room = new Room
-                {
-                    RoomId = model.RoomId,
-                };
+                return;
             }
+
             room.AddPlayer(player);
+
             DataMemory.Rooms.TryAdd(room.RoomId,room);
+
             await Groups.AddToGroupAsync(Context.ConnectionId, model.RoomId.ToString());
+
             await Clients.Group(room.RoomId.ToString())
                 .SendAsync(nameof(EnterRoom), room.Players);
         }
@@ -32,6 +50,12 @@ namespace Mercury.API.SignIrServices
         {
             await Clients.Group(model.RoomId.ToString())
                 .SendAsync(nameof(StartGame), $"{model.RoomId} started.");
+        }
+
+        public async Task GameOver(GameOverModel model)
+        {
+            await Clients.GroupExcept(model.RoomId.ToString(), new List<string> { Context.ConnectionId })
+                .SendAsync(nameof(GameOver), $"{model.RoomId} end.");
         }
 
         public async Task SyncEvent(SyncEventModel model)
@@ -49,6 +73,11 @@ namespace Mercury.API.SignIrServices
         }
     }
 
+    public class CreateRoomModel
+    {
+        public Guid UserId { get; set; }
+    }
+
     public class EnterRoomModel
     {
         public Guid RoomId { get; set; }
@@ -56,6 +85,11 @@ namespace Mercury.API.SignIrServices
     }
 
     public class StartGameModel
+    {
+        public Guid RoomId { get; set; }
+    }
+
+    public class GameOverModel
     {
         public Guid RoomId { get; set; }
     }

@@ -1,19 +1,27 @@
-﻿using System;
+﻿using Mercury.API.Data;
+using System;
 using System.Collections.Concurrent;
 
 namespace Mercury.API.Models
 {
     public class Room
     {
-        public Room()
+        private Room()
         {
             RoomId = Guid.NewGuid();
             Players = new ConcurrentDictionary<Guid, Score>();
-
         }
+
         public Guid RoomId { get; set; }
         public ConcurrentDictionary<Guid, Score> Players { get; set; }
         public string GroupSocketId { get; set; }
+
+        public static Room Create()
+        {
+            var room = new Room();
+            DataMemory.Rooms.TryAdd(room.RoomId, room);
+            return room;
+        }
 
         public void AddPlayer(Player player)
         {
