@@ -1,16 +1,7 @@
-using Mercury.API.Controllers;
-using Mercury.API.Data;
 using Mercury.API.SignIrServices;
-using Microsoft.AspNetCore.Http.Connections;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR().AddJsonProtocol(o =>
 {
     o.PayloadSerializerOptions.PropertyNamingPolicy = null;
@@ -18,14 +9,6 @@ builder.Services.AddSignalR().AddJsonProtocol(o =>
 });
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseAuthorization();
 app.UseRouting();
-app.MapHub<HubSockets>("/all");
+app.MapHub<HubSockets>("/socket");
 app.Run();
