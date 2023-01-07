@@ -39,6 +39,7 @@ namespace Mercury.API.Controllers
         }
         
         [HttpPost]
+        [Route("add")]
         public Room AddToRoom([FromBody] List<Guid> playerIds,Guid roomId)
         {
             var players = DataMemory.Users.Where(p => playerIds.Contains(p.PlayerId)).ToList();
@@ -48,6 +49,7 @@ namespace Mercury.API.Controllers
         }
         
         [HttpPost]
+        [Route("remove")]
         public Room RemoveFromRoom([FromBody] List<Guid> playerIds, Guid roomId)
         {
             var players = DataMemory.Users.Where(p => playerIds.Contains(p.PlayerId)).ToList();
