@@ -27,9 +27,5 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthorization();
 app.UseRouting();
-app.MapHub<HubSockets>("/all", options =>
-{
-    options.Transports = HttpTransportType.WebSockets;
-}
-);
+app.MapHub<HubSockets>("/all");
 app.Run();
