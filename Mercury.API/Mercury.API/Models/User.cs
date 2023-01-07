@@ -7,6 +7,9 @@
     }
     public class Scores
     {
+        public int PointInCurrentSet { get; set; }
+        public int WinSet { get; set; }
+        public Player Player { get; set; }
     }
     public class Room
     {
@@ -20,5 +23,7 @@
         public string Name { get; set; }
         public string ConnectionId { get; set; }
         public Guid PlayerId { get; set; }
+        public string GroupSocketId { get; set; }
+
     }
 }
