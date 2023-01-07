@@ -9,6 +9,7 @@ builder.Services.AddSignalR().AddJsonProtocol(o =>
 });
 var app = builder.Build();
 
+app.UseAuthorization();
 app.UseRouting();
 app.MapHub<HubSockets>("/socket");
 app.Run();
