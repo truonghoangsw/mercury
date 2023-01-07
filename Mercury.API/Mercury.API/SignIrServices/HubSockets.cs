@@ -1,45 +1,19 @@
 ﻿using Mercury.API.Data;
 using Mercury.API.Models;
 using Microsoft.AspNetCore.SignalR;
-using Newtonsoft.Json;
 using System.Collections.Concurrent;
 
 namespace Mercury.API.SignIrServices
 {
-    public static class SocketAction
-    {
-        public const string EnterRoom = "enter_room";
-        public const string StartGame = "start_game";
-        public const string SyncEvent = "sync_event";
-    }
-
     public class HubSockets : Hub
     {
-        public async Task SendMessage(string action, string message)
+        public async Task EnterRoom(EnterRoomModel model)
         {
-            switch (action)
-            {
-                case SocketAction.EnterRoom:
-                    await EnterRoom(JsonConvert.DeserializeObject<EnterRoomModel>(message)!);
-                    break;
-                case SocketAction.StartGame:
-                    await StartGame(JsonConvert.DeserializeObject<StartGameModel>(message)!);
-                    break;
-                case SocketAction.SyncEvent:
-                    await SyncEvent(JsonConvert.DeserializeObject<SyncEventModel>(message)!);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        private async Task EnterRoom(EnterRoomModel model)
-        {
-            var player = DataMemory.Users.FirstOrDefault(x => x.PlayerId == model.UserId);
+            var player = DataMemory.Users.Find(x => x.PlayerId == model.UserId);
 
             if (player is null) return;
 
-            var room = DataMemory.Rooms.FirstOrDefault(x => x.RoomId == model.RoomId);
+            var room = DataMemory.Rooms.Find(x => x.RoomId == model.RoomId);
 
             if (room is null)
             {
@@ -56,23 +30,23 @@ namespace Mercury.API.SignIrServices
             await Groups.AddToGroupAsync(Context.ConnectionId, model.RoomId.ToString());
 
             await Clients.Group(room.RoomId.ToString())
-                .SendAsync(SocketAction.EnterRoom, JsonConvert.SerializeObject(room.Players));
+                .SendAsync(nameof(EnterRoom), room.Players);
         }
 
-        private async Task StartGame(StartGameModel model)
+        public async Task StartGame(StartGameModel model)
         {
             await Clients.Group(model.RoomId.ToString())
-                .SendAsync(SocketAction.StartGame, $"{model.RoomId} started.");
+                .SendAsync(nameof(StartGame), $"{model.RoomId} started.");
         }
 
-        private async Task SyncEvent(SyncEventModel model)
+        public async Task SyncEvent(SyncEventModel model)
         {
             switch (model.EventType)
             {
                 case EventType.HitObject:
                     //TODO: handle logic hit object and add score
                     await Clients.Group(model.RoomId.ToString())
-                        .SendAsync(EventType.HitObject, JsonConvert.SerializeObject(model));
+                        .SendAsync(nameof(SyncEvent), model);
                     break;
                 default:
                     break;
@@ -80,31 +54,31 @@ namespace Mercury.API.SignIrServices
         }
     }
 
-    internal class EnterRoomModel
+    public class EnterRoomModel
     {
         public Guid RoomId { get; set; }
         public Guid UserId { get; set; }
     }
 
-    internal class StartGameModel
+    public class StartGameModel
     {
         public Guid RoomId { get; set; }
     }
 
-    public static class EventType
+    public enum EventType
     {
-        public const string HitObject = "hit_object";
+        HitObject
     }
 
-    internal class SyncEventModel
+    public class SyncEventModel
     {
-        public string? EventType { get; set; }
+        public EventType EventType { get; set; }
         public Guid RoomId { get; set; }
         public Guid UserId { get; set; }
         public DateTime Time { get; set; }
     }
 
-    internal class EventData_HitObject
+    public class EventData_HitObject
     {
         public Guid RoomId { get; set; }
         public Guid UserId { get; set; }
