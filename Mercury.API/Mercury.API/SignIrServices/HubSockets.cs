@@ -7,6 +7,8 @@ namespace Mercury.API.SignIrServices
 {
     public partial class HubSockets : Hub
     {
+        public object _lockObject = new();
+        public Player? WaitingPlayer { get; set; }
         public async Task CreateRoom(EnterRoomModel model)
         {
             if (!DataMemory.Users.TryGetValue(model.UserId, out var player))
@@ -58,6 +60,44 @@ namespace Mercury.API.SignIrServices
                 .SendAsync(nameof(GameOver), $"{model.RoomId} end.");
         }
 
+        public async Task AutoMatch(AutoMatchModel model)
+        {
+            if (!DataMemory.Users.TryGetValue(model.UserId, out var _waitingPlayer))
+            {
+                return;
+            }
+            Room? room = null;
+            lock (_lockObject)
+            {
+                if (WaitingPlayer is null)
+                {
+                    WaitingPlayer = _waitingPlayer;
+                    return;
+                }
+                else
+                {
+                    
+                    if (!DataMemory.Users.TryGetValue(model.UserId, out var player_1))
+                    {
+                        return;
+                    }
+                    room = Room.Create();
+                    room.AddPlayer(player_1);
+                    room.AddPlayer(WaitingPlayer);
+                    DataMemory.Rooms.TryAdd(room.RoomId, room);
+
+                }
+
+            }
+
+            if (room is null) return;
+
+            await Clients.Group(room.RoomId.ToString())
+              .SendAsync(nameof(AutoMatch), room.Players);
+
+            WaitingPlayer = null;
+        }
+
         public async Task SyncEvent(SyncEventModel model)
         {
             switch (model.EventType)
@@ -92,6 +132,10 @@ namespace Mercury.API.SignIrServices
     public class GameOverModel
     {
         public Guid RoomId { get; set; }
+    }
+    public class AutoMatchModel
+    {
+        public Guid UserId { get; set; }
     }
 
     public enum EventType
