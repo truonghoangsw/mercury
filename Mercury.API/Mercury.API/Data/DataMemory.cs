@@ -5,8 +5,8 @@ namespace Mercury.API.Data
 {
     public  class DataMemory
     {
-        static ConcurrentBag<User> Users = new ConcurrentBag<User>();
-        static ConcurrentBag<Room> Rooms = new ConcurrentBag<Room>();
-        static ConcurrentBag<Clans> Clans = new ConcurrentBag<Clans>();
+        public static ConcurrentBag<Player> Users = new ConcurrentBag<Player>();
+        public static ConcurrentBag<Room> Rooms = new ConcurrentBag<Room>();
+        public static ConcurrentBag<Clans> Clans = new ConcurrentBag<Clans>();
     }
 }

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Mercury.API.Data;
+using Mercury.API.Models;
+using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -10,9 +12,9 @@ namespace Mercury.API.Controllers
     {
         // GET: api/<UserController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IEnumerable<Player> Get()
         {
-            return new string[] { "value1", "value2" };
+            return (IEnumerable<Player>)DataMemory.Users;
         }
 
         // GET api/<UserController>/5

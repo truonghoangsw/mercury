@@ -11,12 +11,14 @@
     public class Room
     {
         public Guid RoomId { get; set; }
-        public List<User> Users { get; set; }
+        public List<Player> Users { get; set; }
         public List<Scores> Scores { get; set; }
+        public string GroupSocketId { get; set; }
     }
-    public class User
+    public class Player
     {
         public string Name { get; set; }
-        public Guid UserId { get; set; }
+        public string ConnectionId { get; set; }
+        public Guid PlayerId { get; set; }
     }
 }
