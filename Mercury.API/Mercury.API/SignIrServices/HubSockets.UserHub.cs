@@ -16,7 +16,7 @@ namespace Mercury.API.SignIrServices
         //    await Clients.Caller.SendAsync("GetUsers", DataMemory.Users.FirstOrDefault(p => p.PlayerId == id));
         //}
      
-        public async Task AddUser([FromBody] string userName)
+        public async Task AddUser(string userName)
         {
             var player = new Player
             {
