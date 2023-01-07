@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 
 namespace Mercury.API.Data
 {
-    public static class DataMemory
+    public  class DataMemory
     {
         static ConcurrentBag<User> Users = new ConcurrentBag<User>();
         static ConcurrentBag<Room> Rooms = new ConcurrentBag<Room>();
