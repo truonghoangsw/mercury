@@ -25,11 +25,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
-//app.MapControllers();
+app.UseRouting();
 app.MapHub<HubSockets>("/all", options =>
 {
     options.Transports = HttpTransportType.WebSockets;
