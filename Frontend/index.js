@@ -2752,7 +2752,7 @@ var __connection, __userId;
 
 function initConnection() {
     __connection = new signalR.HubConnectionBuilder()
-    .withUrl("https://hackathon-2023-mercury.creativeforce-dev.io/all", {
+    .withUrl("ws://hackathon-2023-mercury.creativeforce-dev.io/socket", {
         skipNegotiation: true,
         transport: signalR.HttpTransportType.WebSockets
     })
