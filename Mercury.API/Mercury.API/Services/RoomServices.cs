@@ -2,6 +2,9 @@
 {
     public class RoomServices
     {
-        public int MyProperty { get; set; }
+        public RoomServices()
+        {
+        }
+        
     }
 }

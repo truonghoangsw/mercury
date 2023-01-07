@@ -26,27 +26,41 @@ namespace Mercury.API.Controllers
 
         // POST api/<UserController>
         [HttpPost]
-        public Player Post([FromBody] string userName)
+        public Room Post([FromBody] List<Guid> playerIds)
         {
-            var player = new Player
+            var players = DataMemory.Users.Where(p => playerIds.Contains(p.PlayerId)).ToList();
+            var romNew = new Room()
             {
-                Name = userName,
-                PlayerId = Guid.NewGuid(),
+                RoomId = Guid.NewGuid(),
+                Player = players
             };
-            DataMemory.Users.Add(player);
-            return player;
+            DataMemory.Rooms.Add(romNew);
+            return romNew;
         }
-
-
-        // DELETE api/<UserController>/5
-        [HttpDelete("{id}")]
-        public void Delete(Guid id)
+        
+        [HttpPost]
+        public Room AddToRoom([FromBody] List<Guid> playerIds,Guid roomId)
         {
-            var data = DataMemory.Users.FirstOrDefault(p => p.PlayerId == id);
-            if (data != null)
-            {
-                DataMemory.Users.Remove(data);
-            }
+            var players = DataMemory.Users.Where(p => playerIds.Contains(p.PlayerId)).ToList();
+            var room  = DataMemory.Rooms.FirstOrDefault(s=>s.RoomId == roomId);
+            room.Player.AddRange(players);
+            return room;
         }
+        
+        [HttpPost]
+        public Room RemoveFromRoom([FromBody] List<Guid> playerIds, Guid roomId)
+        {
+            var players = DataMemory.Users.Where(p => playerIds.Contains(p.PlayerId)).ToList();
+            var room = DataMemory.Rooms.FirstOrDefault(s => s.RoomId == roomId);
+            foreach (var player in players)
+            {
+                room.Player.Remove(player);
+            }
+            
+            if(room.Player.Count == 0)
+                DataMemory.Rooms.Remove(room);
+            return room;
+        }
+        
     }
 }

@@ -14,7 +14,7 @@
     public class Room
     {
         public Guid RoomId { get; set; }
-        public List<Player> Users { get; set; }
+        public List<Player> Player { get; set; }
         public List<Scores> Scores { get; set; }
         public string GroupSocketId { get; set; }
     }
