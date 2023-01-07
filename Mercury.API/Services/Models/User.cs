@@ -9,7 +9,7 @@ namespace Mercury.API.Models
         {
             RoomId = Guid.NewGuid();
             Players = new ConcurrentDictionary<Guid, Score>();
-
+                
         }
         public Guid RoomId { get; set; }
         public ConcurrentDictionary<Guid, Score> Players { get; set; }
@@ -27,7 +27,7 @@ namespace Mercury.API.Models
         {
             this.Player = player;
         }
-        public Player Player { get; set; }
+        public Player Player { get;set; }
         public int PointInCurrentSet { get; set; }
         public int WinSet { get; set; }
     }

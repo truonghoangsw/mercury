@@ -5,30 +5,25 @@ using System.Collections.Concurrent;
 
 namespace Mercury.API.SignIrServices
 {
-    public class HubSockets : Hub
+    public partial class HubSockets : Hub
     {
         public async Task EnterRoom(EnterRoomModel model)
         {
-            var player = DataMemory.Users.Find(x => x.PlayerId == model.UserId);
+            
+            if (!DataMemory.Users.TryGetValue(model.UserId, out var player)){
+                return ;
+            }
 
-            if (player is null) return;
-
-            var room = DataMemory.Rooms.Find(x => x.RoomId == model.RoomId);
-
-            if (room is null)
+            if (!DataMemory.Rooms.TryGetValue(model.RoomId, out var room))
             {
                 room = new Room
                 {
                     RoomId = model.RoomId,
-                    Players = new BlockingCollection<Player>(),
                 };
             }
-            room.Players.Add(player!);
-
-            DataMemory.Rooms.Add(room);
-
+            room.AddPlayer(player);
+            DataMemory.Rooms.TryAdd(room.RoomId,room);
             await Groups.AddToGroupAsync(Context.ConnectionId, model.RoomId.ToString());
-
             await Clients.Group(room.RoomId.ToString())
                 .SendAsync(nameof(EnterRoom), room.Players);
         }
