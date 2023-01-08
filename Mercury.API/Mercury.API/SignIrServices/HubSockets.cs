@@ -228,7 +228,7 @@ namespace Mercury.API.SignIrServices
             if (room is null) return;
 
             await Clients.Group(room.RoomId.ToString())
-              .SendAsync(nameof(AutoMatch), room.Players);
+              .SendAsync(nameof(AutoMatch), room);
             
         }
 
