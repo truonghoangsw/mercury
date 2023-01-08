@@ -15,7 +15,7 @@ function EnterRoom({userId, setIsShowEnterRoom}) {
     }
     ws.invoke('EnterRoom', {
       userId,
-      roomId,
+      roomId: roomId ? roomId.trim() : '',
     }).catch((error) => {
       console.error(error);
       alert('Error: ' + error.message);
