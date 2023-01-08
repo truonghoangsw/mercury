@@ -116,6 +116,14 @@
   padding: 0 10px;
 }
 
+.room-infor > span {
+  vertical-align: middle;
+}
+
+.material-symbols-outlined {
+  cursor: pointer;
+  margin-left: 5px;
+}
 .home-page button.btn-default {
   color: #000000;
   background-color: #ffffff;
