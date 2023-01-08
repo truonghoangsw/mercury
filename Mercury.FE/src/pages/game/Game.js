@@ -96,8 +96,16 @@ function Game({user, gameData, setGameData}) {
 
   const onPlayerDisconnect = useCallback(() => {
     setOpenEndGameModal(true);
-    // TODO
-  }, []);
+    setGameData(prev => {
+      if (prev) {
+        return {
+          ...prev,
+          isDisconnected: true,
+        };
+      }
+      return prev;
+    });
+  }, [setGameData]);
 
   useEffect(() => {
     ws.on("PlayerDisconnect", onPlayerDisconnect);

@@ -32,10 +32,10 @@ namespace Mercury.API.SignIrServices
 
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, room.RoomId.ToString());
 
-            if (room?.Players?.Count == 0)
-            {
-                room.IsEndMatch = true;
-            }
+            //if (room?.Players?.Count == 0)
+            //{
+            //    room.IsEndMatch = true;
+            //}
 
             await base.OnDisconnectedAsync(exception);
         }
@@ -82,12 +82,12 @@ namespace Mercury.API.SignIrServices
                 return;
             }
 
-            if (room.IsEndMatch)
-            {
-                await Clients.Caller
-                    .SendAsync("ErrorMessage", "Game already done");
-                return;
-            }
+            //if (room.IsEndMatch)
+            //{
+            //    await Clients.Caller
+            //        .SendAsync("ErrorMessage", "Game already done");
+            //    return;
+            //}
 
             bool isInvalid = false;
             lock (room)
@@ -186,7 +186,7 @@ namespace Mercury.API.SignIrServices
                 }
                 
                 winner.PointInCurrentSet++;
-                if (winner.PointInCurrentSet >= 1)
+                if (winner.PointInCurrentSet >= 5)
                 {
                     winner.WinSet++;
                     winner.PointInCurrentSet = 0;
