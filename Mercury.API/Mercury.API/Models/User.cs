@@ -31,13 +31,22 @@ namespace Mercury.API.Models
             Players.TryAdd(player.PlayerId, new Score(player));
         }
 
-        internal void Reset()
+        public void Reset()
         {
             IsEndMatch = false;
             foreach (var player in Players)
             {
                 player.Value.WinSet = 0;
                 player.Value.PointInCurrentSet = 0;
+            }
+        }
+
+        private object _lockCurrentGameId = new();
+        public void StartGame()
+        {
+            lock (_lockCurrentGameId)
+            {
+                CurrentGameId++;
             }
         }
     }
@@ -59,5 +68,16 @@ namespace Mercury.API.Models
         public string ConnectionId { get; set; }
         public Guid PlayerId { get; set; }
         public string GroupSocketId { get; set; }
+        public Guid? RoomId { get; set; }
+
+        private object _joinRoomLock = new();
+        public void JoinRoom(Guid roomId)
+        {
+            lock (_joinRoomLock)
+            {
+                RoomId = roomId;
+                GroupSocketId = roomId.ToString();
+            }
+        }
     }
 }

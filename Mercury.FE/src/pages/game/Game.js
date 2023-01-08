@@ -20,29 +20,19 @@ import ws from '../../common/ws';
 import storage from '../../common/storage';
 import Winner from './Winner';
 import Loser from './Loser';
+import GameResult from './GameResult';
 
-function Game({user}) {
+function Game({user, gameData, setGameData}) {
   const runnerRef = useRef(null);
   const [gameState, setGameState] = useState(GAME_STATE.NOT_START);
-  const [gameData, setGameData] = useState(null);
 
   const [open, setOpen] = React.useState(false);
  
   const handleClose = () => setOpen(false)
   const userId = user?.playerId;
 
-  const onStartGame = useCallback(() => {
-    if (runnerRef.current) {
-      runnerRef.current.start();
-      setGameState(GAME_STATE.PLAYING);
-    }
-  }, []);
-
   const onGameOver = useCallback((data) => {
-    console.log(data);
-    if (data === userId) {
-
-    }
+    setGameData(data);
     if (runnerRef.current) {
       runnerRef.current.gameOver(true);
     }
@@ -66,24 +56,31 @@ function Game({user}) {
   }, [onThisGameOver]);
 
   useEffect(() => {
-    ws.on("StartGame", onStartGame);
-    return () => {
-      ws.off('StartGame', onStartGame);
-    };
-  }, [onStartGame]);
-
-  useEffect(() => {
     ws.on("GameOver", onGameOver);
     return () => {
       ws.off('GameOver', onGameOver);
     };
   }, [onGameOver]);
 
+  useEffect(() => {
+    setTimeout(() => {
+      if (runnerRef.current) {
+        runnerRef.current.start();
+        setGameState(GAME_STATE.PLAYING);
+      }
+    }, 3000);
+  }, []);
+
   return (
     <React.Fragment>
       <CssBaseline />
       <Container maxWidth="sm">
         <div className="game-page">
+          <GameResult gameData={gameData} userId={userId}/>
+          {
+            gameState === GAME_STATE.NOT_START &&
+            <div>Game win start in 3 seconds</div>
+          }
           <TRex/>
         </div>
         <Dialog
