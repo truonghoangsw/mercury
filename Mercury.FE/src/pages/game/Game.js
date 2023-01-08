@@ -96,6 +96,7 @@ function Game({user, gameData, setGameData}) {
 
   const onPlayerDisconnect = useCallback(() => {
     setOpenEndGameModal(true);
+    // TODO
   }, []);
 
   useEffect(() => {
@@ -105,10 +106,17 @@ function Game({user, gameData, setGameData}) {
     };
   }, [onPlayerDisconnect]);
 
+  const handleBack = () => {
+    window.location.href = '/';
+  };
+
   return (
     <React.Fragment>
       <CssBaseline/>
       <div className="game-page">
+        <div className="toolbar">
+          <button onClick={handleBack}>Back</button>
+        </div>
         <div className="game-container">
           <GameResult gameData={gameData} userId={userId}/>
           {

@@ -54,14 +54,15 @@ function App() {
       });
   }, [init]);
 
+  const onStartGame = useCallback((payload) => {
+    setGameData({
+      ...payload,
+      startTime: new Date().getTime(),
+    });
+    navigate("/play");
+  }, []);
+
   useEffect(() => {
-    const onStartGame = (payload) => {
-      setGameData({
-        ...payload,
-        startTime: new Date().getTime(),
-      });
-      navigate("/play");
-    };
     ws.on("StartGame", onStartGame);
     return () => {
       ws.off("StartGame", onStartGame);
@@ -81,7 +82,7 @@ function App() {
     <Routes>
       <Route
         path="/"
-        element={<Home user={user} isConnected={isConnected} logout={logout} />}
+        element={<Home user={user} isConnected={isConnected} logout={logout} onStartGame={onStartGame}/>}
       />
       <Route
         path="/play"
