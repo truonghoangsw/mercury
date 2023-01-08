@@ -22,6 +22,7 @@ namespace Mercury.API.Models
         public static Room Create()
         {
             var room = new Room();
+            DataMemory.Rooms.TryAdd(room.RoomId,room);
             return room;
         }
 
