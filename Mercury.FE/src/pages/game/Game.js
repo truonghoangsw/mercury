@@ -103,6 +103,17 @@ function Game({user, gameData, setGameData}) {
     }
   }, [navigate, gameData]);
 
+  const onPlayerDisconnect = useCallback((data) => {
+    setOpen(true);
+  }, []);
+
+  useEffect(() => {
+    ws.on("PlayerDisconnect", onPlayerDisconnect);
+    return () => {
+      ws.off('PlayerDisconnect', onPlayerDisconnect);
+    };
+  }, [onPlayerDisconnect]);
+
   return (
     <React.Fragment>
       <CssBaseline />
