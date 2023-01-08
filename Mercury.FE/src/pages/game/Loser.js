@@ -2,7 +2,7 @@ import React from 'react';
 
 function Loser() {
   return (
-    <div className="winner">
+    <div className="result loser">
       You are Loser
     </div>
   )

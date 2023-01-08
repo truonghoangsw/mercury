@@ -4,15 +4,17 @@
    * T-Rex runner.
    * @param {string} outerContainerId Outer containing element id.
    * @param {Object} opt_config
+   * @param options
    * @constructor
    * @export
    */
-  function Runner(outerContainerId, opt_config) {
+  function Runner(outerContainerId, opt_config, options = null) {
     // // Singleton
     // if (Runner.instance_) {
     //     return Runner.instance_;
     // }
     // Runner.instance_ = this;
+    this.options = options;
 
     this.outerContainerEl = document.querySelector(outerContainerId);
     this.containerEl = null;
@@ -762,7 +764,7 @@
     /**
      * Game over state.
      */
-    gameOver: function () {
+    gameOver: function (isWinner = false) {
       this.playSound(this.soundFx.HIT);
       vibrate(200);
 
@@ -772,13 +774,15 @@
 
       this.tRex.update(100, Trex.status.CRASHED);
 
-      // Game over panel.
-      if (!this.gameOverPanel) {
-        this.gameOverPanel = new GameOverPanel(this.canvas,
-          this.spriteDef.TEXT_SPRITE, this.spriteDef.RESTART,
-          this.dimensions);
-      } else {
-        this.gameOverPanel.draw();
+      if (!isWinner) {
+        // Game over panel.
+        if (!this.gameOverPanel) {
+          this.gameOverPanel = new GameOverPanel(this.canvas,
+            this.spriteDef.TEXT_SPRITE, this.spriteDef.RESTART,
+            this.dimensions);
+        } else {
+          this.gameOverPanel.draw();
+        }
       }
 
       // Update the high score.
@@ -789,6 +793,14 @@
 
       // Reset the time clock.
       this.time = getTimeStamp();
+
+      if (this.options && this.options.onGameOver && !this.isGameOver) {
+        this.options.onGameOver({
+          distanceRan: this.distanceRan,
+          isWinner,
+        });
+      }
+      this.isGameOver = true;
     },
 
     stop: function () {
