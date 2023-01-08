@@ -10,7 +10,7 @@ function Home({user}) {
   const [isShowEnterRoom, setIsShowEnterRoom] = useState(false);
   const [roomId, setRoomId] = useState('');
 
-  const userId = user?.PlayerId;
+  const userId = user?.playerId;
 
   const onInputChange = useCallback((event) => {
     setUsername(event.target.value);
@@ -40,7 +40,7 @@ function Home({user}) {
 
   useEffect(() => {
     const onCreateRoom = (payload) => {
-      setRoomId(payload.RoomId);
+      setRoomId(payload.roomId);
     };
     ws.on('CreateRoom', onCreateRoom);
     return () => {
@@ -50,8 +50,8 @@ function Home({user}) {
 
   useEffect(() => {
     const onStartGame = (payload) => {
-      storage.setItem('roomId', payload?.RoomId);
-      storage.setItem('currentGameId', payload?.CurrentGameId);
+      storage.setItem('roomId', payload?.roomId);
+      storage.setItem('currentGameId', payload?.currentGameId);
       navigate('/play');
     };
     ws.on('StartGame', onStartGame);
@@ -65,7 +65,7 @@ function Home({user}) {
       {
         !!user &&
         <>
-          <h1>Hello {user.Name}</h1>
+          <h1>Hello {user.name}</h1>
           {
             !isShowEnterRoom && !roomId &&
             <>

@@ -6,9 +6,12 @@ import storage from '../../common/storage';
 import Winner from './Winner';
 import Loser from './Loser';
 
-function Game() {
+function Game({user}) {
   const runnerRef = useRef(null);
   const [gameState, setGameState] = useState(GAME_STATE.NOT_START);
+  const [gameData, setGameData] = useState(null);
+
+  const userId = user?.playerId;
 
   const onStartGame = useCallback(() => {
     if (runnerRef.current) {
@@ -18,17 +21,21 @@ function Game() {
   }, []);
 
   const onGameOver = useCallback((data) => {
+    console.log(data);
+    if (data === userId) {
+
+    }
     if (runnerRef.current) {
       runnerRef.current.gameOver(true);
     }
-  }, []);
+  }, [userId]);
 
   const onThisGameOver = useCallback((data) => {
     const roomId = storage.getItem('roomId');
     const currentGameId = storage.getItem('currentGameId');
     const user = storage.getItem('user');
     setGameState(data?.isWinner ? GAME_STATE.WIN : GAME_STATE.LOSE);
-    ws.invoke('GameOver', {roomId, currentGameId, userId: user?.PlayerId});
+    ws.invoke('GameOver', {roomId, currentGameId, userId: user?.playerId});
   }, []);
 
   useEffect(() => {

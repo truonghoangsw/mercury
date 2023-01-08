@@ -13,7 +13,7 @@ function App() {
     await ws.start();
     const savedUser = storage.getItem('user');
     if (savedUser) {
-      ws.invoke('AddUser', savedUser.Name).catch((error) => {
+      ws.invoke('AddUser', savedUser.name).catch((error) => {
         console.error(error);
         alert('Error: ' + error.message);
       });
