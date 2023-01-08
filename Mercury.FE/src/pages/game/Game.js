@@ -14,12 +14,14 @@ import storage from '../../common/storage';
 import Winner from './Winner';
 import Loser from './Loser';
 import GameResult from './GameResult';
+import {useNavigate} from 'react-router-dom';
 
 function Game({user, gameData, setGameData}) {
   const runnerRef = useRef(null);
   const [gameState, setGameState] = useState(() => {
-    return Object.values(gameData?.players).some(x => x?.winSet || x?.pointInCurrentSet) ? GAME_STATE.RE_STARTING : GAME_STATE.NOT_START;
+    return Object.values(gameData?.players || {}).some(x => x?.winSet || x?.pointInCurrentSet) ? GAME_STATE.RE_STARTING : GAME_STATE.NOT_START;
   });
+  const navigate = useNavigate();
 
   const [open, setOpen] = React.useState(false);
 
@@ -71,6 +73,12 @@ function Game({user, gameData, setGameData}) {
       }
     }, 3000);
   }, []);
+
+  useEffect(() => {
+    if (!gameData) {
+      navigate('/');
+    }
+  }, [navigate, gameData]);
 
   return (
     <React.Fragment>
