@@ -44,20 +44,64 @@ namespace Mercury.API.SignIrServices
 
             await Groups.AddToGroupAsync(Context.ConnectionId, model.RoomId.ToString());
 
+            room.CurrentGameId++;
+
             await Clients.Group(room.RoomId.ToString())
-                .SendAsync(nameof(EnterRoom), room);
+                .SendAsync("StartGame", room);
         }
 
-        public async Task StartGame(StartGameModel model)
+        public async Task ReplayMatch(ReaplayMatchModel model)
         {
-            await Clients.Group(model.RoomId.ToString())
-                .SendAsync(nameof(StartGame), $"{model.RoomId} started.");
+            if (!DataMemory.Rooms.TryGetValue(model.RoomId, out var room))
+            {
+                return;
+            }
+
+            if (model.CurrentGameId != room.CurrentGameId) return;
+            
+            room.Reset();
+
+            room.CurrentGameId++;
+
+            await Clients.Group(room.RoomId.ToString())
+                .SendAsync("StartGame", room);
         }
 
         public async Task GameOver(GameOverModel model)
         {
-            await Clients.GroupExcept(model.RoomId.ToString(), new List<string> { Context.ConnectionId })
-                .SendAsync(nameof(GameOver), $"{model.RoomId} end.");
+            if (!DataMemory.Rooms.TryGetValue(model.RoomId, out var room))
+            {
+                return;
+            }
+
+            if (room.CurrentGameId != model.CurrentGameId)
+            {
+                return;
+            }
+
+            if (!room.Players.TryGetValue(model.RoomId, out var loser))
+            {
+                return;
+            }
+
+            var winner = room.Players.Values.FirstOrDefault(x => x != loser);
+
+            winner.PointInCurrentSet++;
+            if (winner.PointInCurrentSet >= 5)
+            {
+                winner.WinSet++;
+                winner.PointInCurrentSet = 0;
+                loser.PointInCurrentSet = 0;
+                if (winner.WinSet >= 2)
+                {
+                    room.IsEndMatch = true;
+                }
+            }
+
+            room.CurrentGameId++;
+            
+            await Clients.Group(model.RoomId.ToString())
+                .SendAsync(nameof(GameOver), room);
         }
 
         public async Task AutoMatch(AutoMatchModel model)
@@ -124,14 +168,17 @@ namespace Mercury.API.SignIrServices
         public Guid UserId { get; set; }
     }
 
-    public class StartGameModel
+    public class ReaplayMatchModel
     {
         public Guid RoomId { get; set; }
+        public int CurrentGameId { get; set; }
     }
 
     public class GameOverModel
     {
         public Guid RoomId { get; set; }
+        public Guid UserId { get; set; }
+        public int CurrentGameId { get;set;}
     }
     public class AutoMatchModel
     {
