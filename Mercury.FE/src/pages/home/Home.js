@@ -4,7 +4,7 @@ import EnterRoom from './EnterRoom';
 import storage from '../../common/storage';
 import {useNavigate} from 'react-router-dom';
 
-function Home({user}) {
+function Home({user, setGameData}) {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [isShowEnterRoom, setIsShowEnterRoom] = useState(false);
@@ -50,6 +50,7 @@ function Home({user}) {
 
   useEffect(() => {
     const onStartGame = (payload) => {
+      setGameData(payload);
       storage.setItem('roomId', payload?.roomId);
       storage.setItem('currentGameId', payload?.currentGameId);
       navigate('/play');
@@ -58,7 +59,7 @@ function Home({user}) {
     return () => {
       ws.off('StartGame', onStartGame);
     };
-  }, [roomId, navigate, isShowEnterRoom]);
+  }, [navigate, isShowEnterRoom]);
 
   return (
     <div className="home-page">

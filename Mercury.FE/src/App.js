@@ -8,6 +8,7 @@ import storage from './common/storage';
 function App() {
   const [isConnected, setIsConnected] = useState(false);
   const [user, setUser] = useState(null);
+  const [gameData, setGameData] = useState(null);
 
   const init = useCallback(async () => {
     await ws.start();
@@ -46,8 +47,8 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<Home user={user}/>}/>
-      <Route path="/play" element={<Game user={user}/>}/>
+      <Route path="/" element={<Home user={user} setGameData={setGameData}/>}/>
+      <Route path="/play" element={<Game user={user} gameData={gameData} setGameData={setGameData}/>}/>
     </Routes>
   );
 }

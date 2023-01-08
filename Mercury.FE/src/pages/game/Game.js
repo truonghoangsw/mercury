@@ -5,11 +5,11 @@ import ws from '../../common/ws';
 import storage from '../../common/storage';
 import Winner from './Winner';
 import Loser from './Loser';
+import GameResult from './GameResult';
 
-function Game({user}) {
+function Game({user, gameData, setGameData}) {
   const runnerRef = useRef(null);
   const [gameState, setGameState] = useState(GAME_STATE.NOT_START);
-  const [gameData, setGameData] = useState(null);
 
   const userId = user?.playerId;
 
@@ -21,10 +21,7 @@ function Game({user}) {
   }, []);
 
   const onGameOver = useCallback((data) => {
-    console.log(data);
-    if (data === userId) {
-
-    }
+    setGameData(data);
     if (runnerRef.current) {
       runnerRef.current.gameOver(true);
     }
@@ -61,6 +58,7 @@ function Game({user}) {
 
   return (
     <div className="game-page">
+      <GameResult gameData={gameData} userId={userId}/>
       <TRex/>
       {
         gameState === GAME_STATE.WIN &&
