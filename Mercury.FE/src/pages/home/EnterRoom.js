@@ -1,10 +1,7 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
+import React, {useCallback, useState} from 'react';
 import ws from '../../common/ws';
-import storage from '../../common/storage';
 
 function EnterRoom({userId}) {
-  const navigate = useNavigate();
   const [roomId, setRoomId] = useState('');
 
   const onRoomIdChane = useCallback((event) => {
@@ -24,17 +21,6 @@ function EnterRoom({userId}) {
       alert('Error: ' + error.message);
     });
   }, [userId, roomId]);
-
-  useEffect(() => {
-    const onEnterRoom = (payload) => {
-      storage.setItem('roomId', roomId);
-      navigate('/play');
-    };
-    ws.on('EnterRoom', onEnterRoom);
-    return () => {
-      ws.off('EnterRoom', onEnterRoom);
-    };
-  }, [roomId, navigate]);
 
   return (
     <>

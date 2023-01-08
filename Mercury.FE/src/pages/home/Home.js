@@ -49,16 +49,14 @@ function Home({user}) {
   }, []);
 
   useEffect(() => {
-    const onEnterRoom = (payload) => {
-      if (isShowEnterRoom) {
-        return;
-      }
-      storage.setItem('roomId', roomId);
+    const onStartGame = (payload) => {
+      storage.setItem('roomId', payload?.RoomId);
+      storage.setItem('currentGameId', payload?.CurrentGameId);
       navigate('/play');
     };
-    ws.on('EnterRoom', onEnterRoom);
+    ws.on('StartGame', onStartGame);
     return () => {
-      ws.off('EnterRoom', onEnterRoom);
+      ws.off('StartGame', onStartGame);
     };
   }, [roomId, navigate, isShowEnterRoom]);
 
