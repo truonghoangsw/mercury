@@ -5,7 +5,6 @@ import ws from "./common/ws";
 import Game from "./pages/game/Game";
 import Home from "./pages/home/Home";
 
-
 function App() {
   const [isConnected, setIsConnected] = useState(false);
   const [user, setUser] = useState(null);

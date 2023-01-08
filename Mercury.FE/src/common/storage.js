@@ -8,7 +8,10 @@ const storage = (() => {
       localStorage.removeItem(key);
       return;
     }
-    localStorage.setItem(key, data && typeof data === 'object' ? JSON.stringify(data) : data);
+    localStorage.setItem(
+      key,
+      data && typeof data === "object" ? JSON.stringify(data) : data
+    );
   };
 
   const getItem = (key) => {

@@ -27,11 +27,6 @@ const UserNameForm = (props) => {
     navigate("/play");
   };
 
-  const onAddUserResponse = useCallback((payload) => {
-    storage.setItem("user", payload);
-    storage.setItem("userName", payload.userName);
-  }, []);
-
   const onInputChange = (event) => {
     setUsername(event.target.value);
     storage.setItem("UserName", event.target.value);

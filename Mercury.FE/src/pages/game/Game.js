@@ -1,11 +1,18 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import CssBaseline from "@mui/material/CssBaseline";
+import Container from "@mui/material/Container";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import { GAME_STATE } from "../../common/constants";
-import storage from "../../common/storage";
-import ws from "../../common/ws";
-import Loser from "./Loser";
 import TRex from "./TRex";
-import Winner from "./Winner";
-import "./styles.scss";
+import ws from "../../common/ws";
+import storage from "../../common/storage";
+import GameResult from "./GameResult";
+import { useNavigate } from "react-router-dom";
 
 const PlayGameForm = () => {
   return (
@@ -98,26 +105,29 @@ const PlayGameForm = () => {
   );
 };
 
-const Game = ({ user }) => {
+function Game({ user, gameData, setGameData }) {
+  const navigate = useNavigate();
   const runnerRef = useRef(null);
   const [isStarted, setIsStarted] = useState(false);
   const [gameState, setGameState] = useState(GAME_STATE.NOT_START);
-  const [gameData, setGameData] = useState(null);
+  const [open, setOpen] = useState(false);
+  const handleClose = () => setOpen(false);
 
   const userId = user?.playerId;
 
-  const onStartGame = useCallback(() => {
-    if (runnerRef.current) {
-      runnerRef.current.start();
-      setGameState(GAME_STATE.PLAYING);
-    }
-  }, []);
-
   const onGameOver = useCallback(
     (data) => {
-      console.log(data);
-      if (data === userId) {
+      if (data) {
+        data = {
+          ...data.room,
+          winnerId: data.winnerId,
+        };
+        if (!data?.isEndMatch) {
+          data.startTime = new Date().getTime();
+          setOpen(true);
+        }
       }
+      setGameData(data);
       if (runnerRef.current) {
         runnerRef.current.gameOver(true);
       }
@@ -125,11 +135,10 @@ const Game = ({ user }) => {
     [userId]
   );
 
-  const onThisGameOver = useCallback((data) => {
+  const onThisGameOver = useCallback(() => {
     const roomId = storage.getItem("roomId");
     const currentGameId = storage.getItem("currentGameId");
     const user = storage.getItem("user");
-    setGameState(data?.isWinner ? GAME_STATE.WIN : GAME_STATE.LOSE);
     ws.invoke("GameOver", { roomId, currentGameId, userId: user?.playerId });
   }, []);
 
@@ -140,27 +149,82 @@ const Game = ({ user }) => {
   //   });
   // }, [onThisGameOver]);
 
+  useEffect(() => {
+    ws.on("GameOver", onGameOver);
+    return () => {
+      ws.off("GameOver", onGameOver);
+    };
+  }, [onGameOver]);
+
+  const onBlur = useCallback(() => {
+    setOpen(true);
+    window.removeEventListener("blur", onBlur);
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("blur", onBlur);
+    return;
+  }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (runnerRef.current) {
+        runnerRef.current.start();
+        setGameState(GAME_STATE.PLAYING);
+      }
+    }, 3000);
+  }, []);
+
   // useEffect(() => {
-  //   ws.on("GameOver", onGameOver);
-  //   return () => {
-  //     ws.off("GameOver", onGameOver);
-  //   };
-  // }, [onGameOver]);
-  console.log("isStarted", isStarted);
+  //   if (!gameData) {
+  //     navigate("/");
+  //   }
+  // }, [navigate, gameData]);
 
   return (
-    <div className="game-page">
-      {!isStarted ? (
-        <PlayGameForm />
-      ) : (
-        <div>
+    <React.Fragment>
+      <CssBaseline />
+      <Container maxWidth="sm" style={{ height: "100vh" }}>
+        <div
+          className="game-page"
+          style={{
+            height: "100vh",
+            display: "flex",
+          }}
+        >
+          <GameResult gameData={gameData} userId={userId} />
+          {gameState === GAME_STATE.NOT_START && (
+            <div>Game win start in 3 seconds</div>
+          )}
           <TRex />
-          {gameState === GAME_STATE.WIN && <Winner />}
-          {gameState === GAME_STATE.LOSE && <Loser />}
+          <button onClick={() => setOpen(true)}>Open modal</button>
         </div>
-      )}
-    </div>
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          maxWidth={"xs"}
+          fullWidth={true}
+        >
+          <DialogTitle id="alert-dialog-title">Game end!</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Please take next action.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button variant="outlined" onClick={handleClose}>
+              Go back home
+            </Button>
+            <Button variant="outlined" onClick={handleClose}>
+              Continue
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Container>
+    </React.Fragment>
   );
-};
+}
 
 export default Game;
