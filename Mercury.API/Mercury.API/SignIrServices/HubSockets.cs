@@ -144,16 +144,8 @@ namespace Mercury.API.SignIrServices
 
         public async Task SyncEvent(SyncEventModel model)
         {
-            switch (model.EventType)
-            {
-                case EventType.HitObject:
-                    //TODO: handle logic hit object and add score
-                    await Clients.Group(model.RoomId.ToString())
-                        .SendAsync(nameof(SyncEvent), model);
-                    break;
-                default:
-                    break;
-            }
+            await Clients.Group(model.RoomId.ToString())
+                .SendAsync(nameof(SyncEvent), model);
         }
     }
 
@@ -185,23 +177,10 @@ namespace Mercury.API.SignIrServices
         public Guid UserId { get; set; }
     }
 
-    public enum EventType
-    {
-        HitObject
-    }
-
     public class SyncEventModel
     {
-        public EventType EventType { get; set; }
         public Guid RoomId { get; set; }
-        public Guid UserId { get; set; }
-        public DateTime Time { get; set; }
-    }
-
-    public class EventData_HitObject
-    {
-        public Guid RoomId { get; set; }
-        public Guid UserId { get; set; }
-        public DateTime Time { get; set; }
+        public string EventType { get; set; }
+        public object EventData { get; set; }
     }
 }
