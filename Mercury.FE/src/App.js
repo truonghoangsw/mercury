@@ -44,9 +44,10 @@ function App() {
 
   useEffect(() => {
     const onStartGame = (payload) => {
-      setGameData(payload);
-      storage.setItem('roomId', payload?.roomId);
-      storage.setItem('currentGameId', payload?.currentGameId);
+      setGameData({
+        ...payload,
+        startTime: new Date().getTime(),
+      });
       navigate('/play');
     };
     ws.on('StartGame', onStartGame);
@@ -54,6 +55,11 @@ function App() {
       ws.off('StartGame', onStartGame);
     };
   }, [navigate]);
+
+  useEffect(() => {
+    storage.setItem('roomId', gameData?.roomId);
+    storage.setItem('currentGameId', gameData?.currentGameId);
+  }, [gameData]);
 
   if (!isConnected) {
     return 'Connecting...';
@@ -64,7 +70,7 @@ function App() {
       <Route path="/" element={<Home user={user}/>}/>
       <Route
         path="/play"
-        element={<Game key={gameData?.currentGameId} user={user} gameData={gameData} setGameData={setGameData}/>}/>
+        element={<Game key={gameData?.startTime} user={user} gameData={gameData} setGameData={setGameData}/>}/>
     </Routes>
   );
 }

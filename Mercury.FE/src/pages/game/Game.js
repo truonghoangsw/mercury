@@ -24,14 +24,25 @@ import GameResult from './GameResult';
 
 function Game({user, gameData, setGameData}) {
   const runnerRef = useRef(null);
-  const [gameState, setGameState] = useState(GAME_STATE.NOT_START);
+  const [gameState, setGameState] = useState(() => {
+    return Object.values(gameData?.players).some(x => x?.winSet || x?.pointInCurrentSet) ? GAME_STATE.RE_STARTING : GAME_STATE.NOT_START;
+  });
 
   const [open, setOpen] = React.useState(false);
- 
+
   const handleClose = () => setOpen(false)
   const userId = user?.playerId;
 
   const onGameOver = useCallback((data) => {
+    if (data) {
+      data = {
+        ...data.room,
+        winnerId: data.winnerId,
+      };
+      if (!data?.isEndMatch) {
+        data.startTime = new Date().getTime();
+      }
+    }
     setGameData(data);
     if (runnerRef.current) {
       runnerRef.current.gameOver(true);
@@ -39,11 +50,10 @@ function Game({user, gameData, setGameData}) {
     setOpen(true)
   }, [userId]);
 
-  const onThisGameOver = useCallback((data) => {
+  const onThisGameOver = useCallback(() => {
     const roomId = storage.getItem('roomId');
     const currentGameId = storage.getItem('currentGameId');
     const user = storage.getItem('user');
-    setGameState(data?.isWinner ? GAME_STATE.WIN : GAME_STATE.LOSE);
     ws.invoke('GameOver', {roomId, currentGameId, userId: user?.playerId});
     setOpen(true)
   }, []);
@@ -82,7 +92,17 @@ function Game({user, gameData, setGameData}) {
             <div>Game win start in 3 seconds</div>
           }
           <TRex/>
+
+          {
+            gameState === GAME_STATE.RE_STARTING && gameData?.winnerId === userId &&
+            <Winner/>
+          }
+          {
+            gameState === GAME_STATE.RE_STARTING && gameData?.winnerId !== userId &&
+            <Loser/>
+          }
         </div>
+
         <Dialog
           open={open}
           onClose={handleClose}
@@ -90,17 +110,9 @@ function Game({user, gameData, setGameData}) {
           aria-describedby="alert-dialog-description"
           maxWidth={'xs'}
         >
-          {
-            gameState === GAME_STATE.WIN ? (
-              <DialogTitle id="alert-dialog-title">
-                  You WIN!
-              </DialogTitle>
-            ) : (
-              <DialogTitle id="alert-dialog-title">
-                You LOSE!
-              </DialogTitle>
-            )
-          }
+          <DialogTitle id="alert-dialog-title">
+            You WIN!
+          </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
               Please take next action.
