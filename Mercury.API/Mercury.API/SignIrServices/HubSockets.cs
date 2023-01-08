@@ -79,7 +79,7 @@ namespace Mercury.API.SignIrServices
                 return;
             }
 
-            if (!room.Players.TryGetValue(model.RoomId, out var loser))
+            if (!room.Players.TryGetValue(model.UserId, out var loser))
             {
                 return;
             }
