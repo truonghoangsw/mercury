@@ -15,7 +15,6 @@ namespace Mercury.API.Models
 
         public Guid RoomId { get; set; }
         public ConcurrentDictionary<Guid, Score> Players { get; set; }
-        public string GroupSocketId { get; set; }
         public int CurrentGameId { get; set; }
         public bool IsEndMatch { get;set;}
         
@@ -28,7 +27,10 @@ namespace Mercury.API.Models
 
         public void AddPlayer(Player player)
         {
-            Players.TryAdd(player.PlayerId, new Score(player));
+            if (Players.TryAdd(player.PlayerId, new Score(player)))
+            {
+                player.RoomId = this.RoomId;
+            }
         }
 
         public void Reset()
@@ -58,17 +60,7 @@ namespace Mercury.API.Models
         public string Name { get; set; }
         public string ConnectionId { get; set; }
         public Guid PlayerId { get; set; }
-        public string GroupSocketId { get; set; }
         public Guid? RoomId { get; set; }
-
-        private object _joinRoomLock = new();
-        public void JoinRoom(Guid roomId)
-        {
-            lock (_joinRoomLock)
-            {
-                RoomId = roomId;
-                GroupSocketId = roomId.ToString();
-            }
-        }
+        
     }
 }

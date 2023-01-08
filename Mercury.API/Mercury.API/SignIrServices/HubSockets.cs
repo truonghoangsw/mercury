@@ -97,8 +97,6 @@ namespace Mercury.API.SignIrServices
                 return;
             }
 
-            player.JoinRoom(model.RoomId);
-
             DataMemory.Rooms.TryAdd(room.RoomId, room);
 
             await Groups.AddToGroupAsync(Context.ConnectionId, model.RoomId.ToString());
@@ -223,6 +221,7 @@ namespace Mercury.API.SignIrServices
                     room.AddPlayer(player_1);
                     room.AddPlayer(WaitingPlayer);
                     DataMemory.Rooms.TryAdd(room.RoomId, room);
+                    WaitingPlayer = null;
                 }
             }
 
@@ -230,8 +229,7 @@ namespace Mercury.API.SignIrServices
 
             await Clients.Group(room.RoomId.ToString())
               .SendAsync(nameof(AutoMatch), room.Players);
-
-            WaitingPlayer = null;
+            
         }
 
         public async Task SyncEvent(SyncEventModel model)
