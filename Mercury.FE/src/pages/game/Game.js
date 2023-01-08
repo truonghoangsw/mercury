@@ -15,6 +15,11 @@ import GameResult from "./GameResult";
 import { useNavigate } from "react-router-dom";
 
 const PlayGameForm = () => {
+  const user = storage.getItem("user");
+  const userId = user.userId;
+  const onRandomMatch = () => {
+    ws.invoke("GameOver", { userId: userId });
+  };
   return (
     <div class="login-box">
       <p
@@ -39,15 +44,17 @@ const PlayGameForm = () => {
       >
         <h2>Click here to find a new random game</h2>
         <form style={{ alignItems: "center", justifyContent: "center" }}>
-          <a href="#">
-            <div>
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-              Random match
-            </div>
-          </a>
+          <div onClick={onRandomMatch}>
+            <a href="#">
+              <div>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                Random match
+              </div>
+            </a>
+          </div>
         </form>
       </div>
 
@@ -181,7 +188,9 @@ function Game({ user, gameData, setGameData }) {
   //   }
   // }, [navigate, gameData]);
 
-  return (
+  return !isStarted ? (
+    <PlayGameForm />
+  ) : (
     <React.Fragment>
       <CssBaseline />
       <Container maxWidth="sm" style={{ height: "100vh" }}>
