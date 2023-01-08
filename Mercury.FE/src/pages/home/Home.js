@@ -1,16 +1,13 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import ws from '../../common/ws';
 import EnterRoom from './EnterRoom';
-import storage from '../../common/storage';
-import {useNavigate} from 'react-router-dom';
 
 function Home({user}) {
-  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [isShowEnterRoom, setIsShowEnterRoom] = useState(false);
   const [roomId, setRoomId] = useState('');
 
-  const userId = user?.PlayerId;
+  const userId = user?.playerId;
 
   const onInputChange = useCallback((event) => {
     setUsername(event.target.value);
@@ -40,7 +37,7 @@ function Home({user}) {
 
   useEffect(() => {
     const onCreateRoom = (payload) => {
-      setRoomId(payload.RoomId);
+      setRoomId(payload.roomId);
     };
     ws.on('CreateRoom', onCreateRoom);
     return () => {
@@ -48,24 +45,12 @@ function Home({user}) {
     };
   }, []);
 
-  useEffect(() => {
-    const onStartGame = (payload) => {
-      storage.setItem('roomId', payload?.RoomId);
-      storage.setItem('currentGameId', payload?.CurrentGameId);
-      navigate('/play');
-    };
-    ws.on('StartGame', onStartGame);
-    return () => {
-      ws.off('StartGame', onStartGame);
-    };
-  }, [roomId, navigate, isShowEnterRoom]);
-
   return (
     <div className="home-page">
       {
         !!user &&
         <>
-          <h1>Hello {user.Name}</h1>
+          <h1>Hello {user.name}</h1>
           {
             !isShowEnterRoom && !roomId &&
             <>
