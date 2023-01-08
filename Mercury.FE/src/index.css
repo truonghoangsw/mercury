@@ -1,9 +1,13 @@
+* {
+  box-sizing: border-box;
+}
+
 #root {
   width: 100%;
   height: 100%;
 }
 
-.game-page {
+.game-page, .home-page {
   width: 100%;
   height: 100%;
   padding-top: 160px;
@@ -62,4 +66,41 @@
 
 #main-content {
   display: none;
+}
+
+.home-page .game-container {
+  max-width: 300px;
+  padding: 15px;
+}
+
+.home-page button {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  height: 40px;
+  background: #29215A;
+  font-size: 16px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.home-page h1 {
+  font-weight: normal;
+  font-size: 28px;
+}
+
+.home-page button:hover {
+  background-color: #2B2561;
+  font-weight: bold;
+}
+
+.home-page .input-group label, .home-page .input-group input {
+  display: block;
+}
+
+.home-page .input-group input {
+  width: 100%;
+  height: 40px;
+  line-height: 40px;
+  padding: 0 10px;
 }
