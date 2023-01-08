@@ -13,13 +13,6 @@ function Game({user, gameData, setGameData}) {
 
   const userId = user?.playerId;
 
-  const onStartGame = useCallback(() => {
-    if (runnerRef.current) {
-      runnerRef.current.start();
-      setGameState(GAME_STATE.PLAYING);
-    }
-  }, []);
-
   const onGameOver = useCallback((data) => {
     setGameData(data);
     if (runnerRef.current) {
@@ -43,22 +36,28 @@ function Game({user, gameData, setGameData}) {
   }, [onThisGameOver]);
 
   useEffect(() => {
-    ws.on("StartGame", onStartGame);
-    return () => {
-      ws.off('StartGame', onStartGame);
-    };
-  }, [onStartGame]);
-
-  useEffect(() => {
     ws.on("GameOver", onGameOver);
     return () => {
       ws.off('GameOver', onGameOver);
     };
   }, [onGameOver]);
 
+  useEffect(() => {
+    setTimeout(() => {
+      if (runnerRef.current) {
+        runnerRef.current.start();
+        setGameState(GAME_STATE.PLAYING);
+      }
+    }, 3000);
+  }, []);
+
   return (
     <div className="game-page">
       <GameResult gameData={gameData} userId={userId}/>
+      {
+        gameState === GAME_STATE.NOT_START &&
+        <div>Game win start in 3 seconds</div>
+      }
       <TRex/>
       {
         gameState === GAME_STATE.WIN &&

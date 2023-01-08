@@ -1,11 +1,8 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import ws from '../../common/ws';
 import EnterRoom from './EnterRoom';
-import storage from '../../common/storage';
-import {useNavigate} from 'react-router-dom';
 
-function Home({user, setGameData}) {
-  const navigate = useNavigate();
+function Home({user}) {
   const [username, setUsername] = useState('');
   const [isShowEnterRoom, setIsShowEnterRoom] = useState(false);
   const [roomId, setRoomId] = useState('');
@@ -47,19 +44,6 @@ function Home({user, setGameData}) {
       ws.off('CreateRoom', onCreateRoom);
     };
   }, []);
-
-  useEffect(() => {
-    const onStartGame = (payload) => {
-      setGameData(payload);
-      storage.setItem('roomId', payload?.roomId);
-      storage.setItem('currentGameId', payload?.currentGameId);
-      navigate('/play');
-    };
-    ws.on('StartGame', onStartGame);
-    return () => {
-      ws.off('StartGame', onStartGame);
-    };
-  }, [navigate, isShowEnterRoom]);
 
   return (
     <div className="home-page">
