@@ -8,6 +8,10 @@ function Home({ user }) {
   const [roomId, setRoomId] = useState("");
 
   const userId = user?.playerId;
+  const BackToHome = () => {
+    setIsShowEnterRoom(true);
+    setRoomId("");
+  };
 
   const onInputChange = useCallback((event) => {
     setUsername(event.target.value);
@@ -81,6 +85,12 @@ function Home({ user }) {
             }
 
             {isShowEnterRoom && <EnterRoom userId={userId} />}
+            {isShowEnterRoom && (
+              <EnterRoom
+                onBack={() => setIsShowEnterRoom(false)}
+                userId={userId}
+              />
+            )}
           </>
         )}
         {!user && (
