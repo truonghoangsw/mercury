@@ -1,13 +1,15 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { GAME_STATE } from "../../common/constants";
-import TRex from "./TRex";
-import ws from "../../common/ws";
 import storage from "../../common/storage";
-import Winner from "./Winner";
+import ws from "../../common/ws";
 import Loser from "./Loser";
+import TRex from "./TRex";
+import Winner from "./Winner";
+import PlayGameForm from "./../../Component/PlayGameForm/index";
 
 function Game({ user }) {
   const runnerRef = useRef(null);
+  const [isStarted, setIsStarted] = useState(false);
   const [gameState, setGameState] = useState(GAME_STATE.NOT_START);
   const [gameData, setGameData] = useState(null);
 
@@ -56,9 +58,7 @@ function Game({ user }) {
 
   return (
     <div className="game-page">
-      {/* <PlayGameForm user={user} /> */}
-      {/* <TRex/> */}
-      <TRex />
+      {isStarted ? <TRex /> : <PlayGameForm />}
       {gameState === GAME_STATE.WIN && <Winner />}
       {gameState === GAME_STATE.LOSE && <Loser />}
     </div>

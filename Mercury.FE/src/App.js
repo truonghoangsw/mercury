@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import storage from "./common/storage";
 import ws from "./common/ws";
 import Game from "./pages/game/Game";
@@ -8,6 +8,8 @@ import Home from "./pages/home/Home";
 function App() {
   const [isConnected, setIsConnected] = useState(false);
   const [user, setUser] = useState(null);
+  const [gameData, setGameData] = useState(null);
+  const navigate = useNavigate();
 
   const init = useCallback(async () => {
     await ws.start();
@@ -46,13 +48,35 @@ function App() {
       });
   }, [init]);
 
+  useEffect(() => {
+    const onStartGame = (payload) => {
+      setGameData({
+        ...payload,
+        startTime: new Date().getTime(),
+      });
+      navigate('/play');
+    };
+    ws.on('StartGame', onStartGame);
+    return () => {
+      ws.off('StartGame', onStartGame);
+    };
+  }, [navigate]);
+
+  useEffect(() => {
+    storage.setItem('roomId', gameData?.roomId);
+    storage.setItem('currentGameId', gameData?.currentGameId);
+  }, [gameData]);
+
+  if (!isConnected) {
+    return 'Connecting...';
+  }
+
   return (
     <Routes>
+      <Route path="/" element={<Home user={user}  isConnected={isConnected}/>}/>
       <Route
-        path="/"
-        element={<Home user={user} isConnected={isConnected} />}
-      />
-      <Route path="/play" element={<Game user={user} />} />
+        path="/play"
+        element={<Game key={gameData?.startTime} user={user} gameData={gameData} setGameData={setGameData}/>}/>
     </Routes>
   );
 }

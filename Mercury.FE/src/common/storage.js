@@ -4,6 +4,11 @@ const storage = (() => {
       key,
       data && typeof data === "object" ? JSON.stringify(data) : data
     );
+    if (data === undefined) {
+      localStorage.removeItem(key);
+      return;
+    }
+    localStorage.setItem(key, data && typeof data === 'object' ? JSON.stringify(data) : data);
   };
 
   const getItem = (key) => {
