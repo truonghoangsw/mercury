@@ -38,19 +38,19 @@ const PlayGameForm = (props) => {
     };
   }, []);
 
-  useEffect(() => {
-    const onEnterRoom = (payload) => {
-      if (isShowEnterRoom) {
-        return;
-      }
-      storage.setItem("roomId", roomId);
-      navigate("/play");
-    };
-    ws.on("EnterRoom", onEnterRoom);
-    return () => {
-      ws.off("EnterRoom", onEnterRoom);
-    };
-  }, [roomId, navigate, isShowEnterRoom]);
+  // useEffect(() => {
+  //   const onEnterRoom = (payload) => {
+  //     if (isShowEnterRoom) {
+  //       return;
+  //     }
+  //     storage.setItem("roomId", roomId);
+  //     navigate("/play");
+  //   };
+  //   ws.on("EnterRoom", onEnterRoom);
+  //   return () => {
+  //     ws.off("EnterRoom", onEnterRoom);
+  //   };
+  // }, [roomId, navigate, isShowEnterRoom]);
 
   console.log("enter play game form");
   return (

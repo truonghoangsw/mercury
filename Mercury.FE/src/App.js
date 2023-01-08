@@ -14,7 +14,7 @@ function App() {
     const savedUser = storage.getItem("user");
     console.log("savedUser", savedUser);
     if (savedUser) {
-      ws.invoke('AddUser', savedUser.name).catch((error) => {
+      ws.invoke("AddUser", savedUser.name).catch((error) => {
         console.error(error);
         alert("Error: " + error.message);
       });
@@ -23,7 +23,7 @@ function App() {
 
   const onAddUserResponse = useCallback((payload) => {
     storage.setItem("user", payload);
-    storage.setItem("userName", payload.userName);
+    storage.setItem("userName", payload.name);
     setUser(payload);
   }, []);
 
@@ -48,7 +48,10 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<Home user={user} conected={isConnected} />} />
+      <Route
+        path="/"
+        element={<Home user={user} isConnected={isConnected} />}
+      />
       <Route path="/play" element={<Game user={user} />} />
     </Routes>
   );
