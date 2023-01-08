@@ -1,4 +1,4 @@
-import { React, useCallback, useEffect, useRef, useState } from "react";
+import { React, useCallback, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TextField from '@mui/material/TextField';
 import storage from "../../common/storage";
@@ -27,11 +27,6 @@ const UserNameForm = (props) => {
     console.log("setUser", userName);
     navigate("/play");
   };
-
-  const onAddUserResponse = useCallback((payload) => {
-    storage.setItem("user", payload);
-    storage.setItem("userName", payload.userName);
-  }, []);
 
   const onInputChange = (event) => {
     setUsername(event.target.value);

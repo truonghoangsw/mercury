@@ -1,11 +1,11 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import ws from '../../common/ws';
-import EnterRoom from './EnterRoom';
+import React, { useCallback, useEffect, useState } from "react";
+import ws from "../../common/ws";
+import EnterRoom from "./EnterRoom";
 
-function Home({user}) {
-  const [username, setUsername] = useState('');
+function Home({ user }) {
+  const [username, setUsername] = useState("");
   const [isShowEnterRoom, setIsShowEnterRoom] = useState(false);
-  const [roomId, setRoomId] = useState('');
+  const [roomId, setRoomId] = useState("");
 
   const userId = user?.playerId;
 
@@ -13,21 +13,24 @@ function Home({user}) {
     setUsername(event.target.value);
   }, []);
 
-  const onSubmit = useCallback((event) => {
-    event.preventDefault();
-    if (!username) {
-      return;
-    }
-    ws.invoke('AddUser', username).catch((error) => {
-      console.error(error);
-      alert('Error: ' + error.message);
-    });
-  }, [username]);
+  const onSubmit = useCallback(
+    (event) => {
+      event.preventDefault();
+      if (!username) {
+        return;
+      }
+      ws.invoke("AddUser", username).catch((error) => {
+        console.error(error);
+        alert("Error: " + error.message);
+      });
+    },
+    [username]
+  );
 
   const createRoom = useCallback(() => {
-    ws.invoke('CreateRoom', {userId}).catch((error) => {
+    ws.invoke("CreateRoom", { userId }).catch((error) => {
       console.error(error);
-      alert('Error: ' + error.message);
+      alert("Error: " + error.message);
     });
   }, [userId]);
 
@@ -39,9 +42,9 @@ function Home({user}) {
     const onCreateRoom = (payload) => {
       setRoomId(payload.roomId);
     };
-    ws.on('CreateRoom', onCreateRoom);
+    ws.on("CreateRoom", onCreateRoom);
     return () => {
-      ws.off('CreateRoom', onCreateRoom);
+      ws.off("CreateRoom", onCreateRoom);
     };
   }, []);
 
@@ -53,17 +56,17 @@ function Home({user}) {
   return (
     <div className="home-page">
       <div className="game-container">
-        {
-          !!user &&
+        {!!user && (
           <>
-            <h1>Hello <strong>{user.name}</strong>,</h1>
-            {
-              !isShowEnterRoom && !roomId &&
+            <h1>
+              Hello <strong>{user.name}</strong>,
+            </h1>
+            {!isShowEnterRoom && !roomId && (
               <>
                 <button onClick={createRoom}>Create Room</button>
                 <button onClick={showEnterRoom}>Enter Room</button>
               </>
-            }
+            )}
             {
               !isShowEnterRoom && !!roomId && (
                 <div className='room-infor'>
@@ -76,14 +79,11 @@ function Home({user}) {
                 </div>
               )
             }
-            {
-              isShowEnterRoom &&
-              <EnterRoom userId={userId}/>
-            }
+
+            {isShowEnterRoom && <EnterRoom userId={userId} />}
           </>
-        }
-        {
-          !user &&
+        )}
+        {!user && (
           <form action="" method="post" onSubmit={onSubmit}>
             <h1>Welcome,</h1>
             <p>Please input your username to continue:</p>
@@ -96,7 +96,7 @@ function Home({user}) {
             </div>
             <button type="submit">Start</button>
           </form>
-        }
+        )}
       </div>
     </div>
   );

@@ -8,8 +8,8 @@ namespace Mercury.API.SignIrServices
     
     public partial class HubSockets : Hub
     {
-        public object _waitingPlayerLock = new();
-        public Player? WaitingPlayer { get; set; }
+        public static object _waitingPlayerLock = new();
+        public static Player? WaitingPlayer { get; set; }
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
@@ -31,6 +31,11 @@ namespace Mercury.API.SignIrServices
             await Clients.Group(room.RoomId.ToString()).SendAsync("PlayerDisconnect", playerDis);
 
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, room.RoomId.ToString());
+
+            if (room?.Players?.Count == 0)
+            {
+                room.IsEndMatch = true;
+            }
 
             await base.OnDisconnectedAsync(exception);
         }
@@ -72,11 +77,18 @@ namespace Mercury.API.SignIrServices
 
             if (player.RoomId.HasValue)
             {
-                await Clients.Group(room.RoomId.ToString())
+                await Clients.Caller
                     .SendAsync("ErrorMessage", "Player already joined a room");
                 return;
             }
-            
+
+            if (room.IsEndMatch)
+            {
+                await Clients.Caller
+                    .SendAsync("ErrorMessage", "Game already done");
+                return;
+            }
+
             bool isInvalid = false;
             lock (room)
             {
