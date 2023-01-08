@@ -46,6 +46,10 @@ function Home({user, logout}) {
     };
   }, []);
 
+  const copyText = () => {
+    // Copy the text inside the text field
+    navigator.clipboard.writeText(roomId);
+  }
   const clearRoomId = useCallback(() => {
     setRoomId('');
   }, []);
@@ -69,10 +73,15 @@ function Home({user, logout}) {
             }
             {
               !isShowEnterRoom && !!roomId &&
-              <>
-                <p>Your room ID: {roomId}</p>
-                <button className="btn-default" type="button" onClick={clearRoomId}>Back</button>
-              </>
+                <div className='room-infor'>
+                  <span>
+                    Your room ID: {roomId}
+                  </span>
+                  <span className="material-symbols-outlined" onClick={copyText}>
+                    content_copy
+                  </span> 
+                  <button className="btn-default" type="button" onClick={clearRoomId}>Back</button>
+                </div>
             }
             {
               isShowEnterRoom &&
