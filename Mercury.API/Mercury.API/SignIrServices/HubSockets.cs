@@ -161,7 +161,11 @@ namespace Mercury.API.SignIrServices
             room.StartGame();
 
             await Clients.Group(model.RoomId.ToString())
-                .SendAsync(nameof(GameOver), room);
+                .SendAsync(nameof(GameOver), new 
+                {
+                    Room = room,
+                    WinnerId = winner.Player.PlayerId,
+                });
         }
 
         public async Task AutoMatch(AutoMatchModel model)
