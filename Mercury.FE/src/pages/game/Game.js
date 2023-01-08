@@ -1,19 +1,12 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
-import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-
 import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Modal from '@mui/material/Modal';
-
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-
-
 import {GAME_STATE} from '../../common/constants';
 import TRex from './TRex';
 import ws from '../../common/ws';
@@ -47,7 +40,6 @@ function Game({user, gameData, setGameData}) {
     if (runnerRef.current) {
       runnerRef.current.gameOver(true);
     }
-    setOpen(true)
   }, [userId]);
 
   const onThisGameOver = useCallback(() => {
@@ -55,7 +47,6 @@ function Game({user, gameData, setGameData}) {
     const currentGameId = storage.getItem('currentGameId');
     const user = storage.getItem('user');
     ws.invoke('GameOver', {roomId, currentGameId, userId: user?.playerId});
-    setOpen(true)
   }, []);
 
   useEffect(() => {
