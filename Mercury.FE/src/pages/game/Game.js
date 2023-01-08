@@ -64,6 +64,16 @@ function Game({user, gameData, setGameData}) {
     };
   }, [onGameOver]);
 
+  const onBlur = useCallback(() => {
+    setOpen(true);
+    window.removeEventListener("blur", onBlur);
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("blur", onBlur);
+    return;
+  }, []);
+
   useEffect(() => {
     setTimeout(() => {
       if (runnerRef.current) {
