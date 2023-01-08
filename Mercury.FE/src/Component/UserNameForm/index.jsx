@@ -1,4 +1,4 @@
-import { React, useCallback, useEffect, useRef, useState } from "react";
+import { React, useCallback, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import storage from "../../common/storage";
 import ws from "../../common/ws";

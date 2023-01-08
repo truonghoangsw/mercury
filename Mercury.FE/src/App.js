@@ -5,6 +5,7 @@ import ws from "./common/ws";
 import Game from "./pages/game/Game";
 import Home from "./pages/home/Home";
 
+
 function App() {
   const [isConnected, setIsConnected] = useState(false);
   const [user, setUser] = useState(null);
@@ -54,29 +55,40 @@ function App() {
         ...payload,
         startTime: new Date().getTime(),
       });
-      navigate('/play');
+      navigate("/play");
     };
-    ws.on('StartGame', onStartGame);
+    ws.on("StartGame", onStartGame);
     return () => {
-      ws.off('StartGame', onStartGame);
+      ws.off("StartGame", onStartGame);
     };
   }, [navigate]);
 
   useEffect(() => {
-    storage.setItem('roomId', gameData?.roomId);
-    storage.setItem('currentGameId', gameData?.currentGameId);
+    storage.setItem("roomId", gameData?.roomId);
+    storage.setItem("currentGameId", gameData?.currentGameId);
   }, [gameData]);
 
   if (!isConnected) {
-    return 'Connecting...';
+    return "Connecting...";
   }
 
   return (
     <Routes>
-      <Route path="/" element={<Home user={user}  isConnected={isConnected}/>}/>
+      <Route
+        path="/"
+        element={<Home user={user} isConnected={isConnected} />}
+      />
       <Route
         path="/play"
-        element={<Game key={gameData?.startTime} user={user} gameData={gameData} setGameData={setGameData}/>}/>
+        element={
+          <Game
+            key={gameData?.startTime}
+            user={user}
+            gameData={gameData}
+            setGameData={setGameData}
+          />
+        }
+      />
     </Routes>
   );
 }
