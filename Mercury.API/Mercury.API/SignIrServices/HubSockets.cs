@@ -19,6 +19,8 @@ namespace Mercury.API.SignIrServices
 
             if (!DataMemory.Rooms.TryGetValue(playerDis!.RoomId!.Value, out var room))
             {
+                await Clients.Caller
+                    .SendAsync("ErrorMessage", "Invalid room");
                 return;
             }
 
@@ -37,6 +39,8 @@ namespace Mercury.API.SignIrServices
         {
             if (!DataMemory.Users.TryGetValue(model.UserId, out var player))
             {
+                await Clients.Caller
+                    .SendAsync("ErrorMessage", "Invalid player");
                 return;
             }
 
@@ -54,6 +58,8 @@ namespace Mercury.API.SignIrServices
         {
             if (!DataMemory.Rooms.TryGetValue(model.RoomId, out var room))
             {
+                await Clients.Caller
+                    .SendAsync("ErrorMessage", "Invalid room");
                 return;
             }
 
@@ -65,6 +71,8 @@ namespace Mercury.API.SignIrServices
             
             if (!DataMemory.Users.TryGetValue(model.UserId, out var player))
             {
+                await Clients.Caller
+                    .SendAsync("ErrorMessage", "Invalid player");
                 return;
             }
 
@@ -72,6 +80,7 @@ namespace Mercury.API.SignIrServices
             {
                 await Clients.Group(room.RoomId.ToString())
                     .SendAsync("ErrorMessage", "Player already joined a room");
+                return;
             }
             
             player.JoinRoom(model.RoomId);
@@ -92,6 +101,8 @@ namespace Mercury.API.SignIrServices
         {
             if (!DataMemory.Rooms.TryGetValue(model.RoomId, out var room))
             {
+                await Clients.Caller
+                    .SendAsync("ErrorMessage", "Invalid room");
                 return;
             }
 
@@ -114,6 +125,8 @@ namespace Mercury.API.SignIrServices
         {
             if (!DataMemory.Rooms.TryGetValue(model.RoomId, out var room))
             {
+                await Clients.Caller
+                    .SendAsync("ErrorMessage", "Invalid room");
                 return;
             }
 
@@ -126,6 +139,8 @@ namespace Mercury.API.SignIrServices
 
             if (!room.Players.TryGetValue(model.UserId, out var loser))
             {
+                await Clients.Caller
+                    .SendAsync("ErrorMessage", "Invalid player");
                 return;
             }
 
@@ -153,6 +168,8 @@ namespace Mercury.API.SignIrServices
         {
             if (!DataMemory.Users.TryGetValue(model.UserId, out var _waitingPlayer))
             {
+                await Clients.Caller
+                    .SendAsync("ErrorMessage", "Invalid player");
                 return;
             }
             Room? room = null;
@@ -173,7 +190,6 @@ namespace Mercury.API.SignIrServices
                     room.AddPlayer(player_1);
                     room.AddPlayer(WaitingPlayer);
                     DataMemory.Rooms.TryAdd(room.RoomId, room);
-
                 }
             }
 
