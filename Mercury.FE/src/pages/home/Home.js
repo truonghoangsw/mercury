@@ -48,6 +48,27 @@ function Home({ user }) {
     };
   }, []);
 
+  // const openDialog = () => {
+  //   setOpen(true);
+  // };
+  // const handleClose = (value) => {
+  //   console.log('close')
+  //   setOpen(false);
+  // };
+
+  // const handleOpenGiveAway = (value) => {
+  //   console.log('handleOpenGiveAway', value)
+  //   setOpen(false);
+  //   setTimeout(() => {
+  //   setOpenGiftBox(value) 
+  //   },200)
+  // }
+ 
+  // const handleCloseGiftBox = () => {
+  //   setOpenGiftBox(false);
+  // }
+
+
   return (
     <div className="home-page">
       <div className="game-container">
