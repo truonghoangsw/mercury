@@ -216,6 +216,7 @@ namespace Mercury.API.SignIrServices
                 return;
             }
             Room? room = null;
+            Player player2 = null;
             lock (_waitingPlayerLock)
             {
                 if (WaitingPlayer is null)
@@ -229,19 +230,24 @@ namespace Mercury.API.SignIrServices
                     {
                         return;
                     }
+                    player2 = WaitingPlayer;
+                    WaitingPlayer = null;
                     room = Room.Create();
                     room.AddPlayer(player_1);
-                    room.AddPlayer(WaitingPlayer);
+                    room.AddPlayer(player2);
                     DataMemory.Rooms.TryAdd(room.RoomId, room);
-                    WaitingPlayer = null;
                 }
             }
 
             if (room is null) return;
 
+            await Groups.AddToGroupAsync(Context.ConnectionId, room.RoomId.ToString());
+            await Groups.AddToGroupAsync(player2.ConnectionId, room.RoomId.ToString());
+
+
             await Clients.Group(room.RoomId.ToString())
               .SendAsync(nameof(AutoMatch), room);
-            
+
         }
 
         public async Task SyncEvent(SyncEventModel model)
