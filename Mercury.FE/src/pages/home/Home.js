@@ -3,7 +3,7 @@ import ws from '../../common/ws';
 import EnterRoom from './EnterRoom';
 import UserNameForm from "../../Component/UserNameForm";
 
-function Home({user}) {
+function Home({ user, isConnected }) {
   const [username, setUsername] = useState('');
   const [isShowEnterRoom, setIsShowEnterRoom] = useState(false);
   const [roomId, setRoomId] = useState('');
@@ -46,7 +46,6 @@ function Home({user}) {
     };
   }, []);
 
-  const { user, isConnected } = props;
   return (
     <div className="home-page">
       <UserNameForm user={user} isConnected={isConnected} />
