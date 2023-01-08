@@ -1,8 +1,13 @@
 import { useRef } from "react";
 import "./styles.scss";
+import { useNavigate } from "react-router-dom";
 
 const UserNameForm = () => {
+  const navigate = useNavigate();
   const userNameRef = useRef();
+  const toPlayGame = () => {
+    navigate("/play");
+  };
   return (
     <div class="login-box">
       <p style={{ fontSize: 25, color: " #03e9f4", fontWeight: 900 }}>
@@ -15,11 +20,13 @@ const UserNameForm = () => {
           <label style={{ fontSize: 20 }}>Username</label>
         </div>
         <a href="#">
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          Submit
+          <div onClick={toPlayGame}>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            Submit
+          </div>
         </a>
       </form>
     </div>
