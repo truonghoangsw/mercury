@@ -1,7 +1,7 @@
 import React, {useCallback, useState} from 'react';
 import ws from '../../common/ws';
 
-function EnterRoom({userId}) {
+function EnterRoom({userId, setIsShowEnterRoom}) {
   const [roomId, setRoomId] = useState('');
 
   const onRoomIdChane = useCallback((event) => {
@@ -22,6 +22,10 @@ function EnterRoom({userId}) {
     });
   }, [userId, roomId]);
 
+  const handleBack = useCallback(() => {
+    setIsShowEnterRoom(false);
+  }, []);
+
   return (
     <>
       <form action="" method="post" onSubmit={onSubmit}>
@@ -33,9 +37,10 @@ function EnterRoom({userId}) {
           />
         </div>
         <button type="submit">Join</button>
+        <button className="btn-default" type="button" onClick={handleBack}>Back</button>
       </form>
     </>
-  )
+  );
 }
 
 export default EnterRoom;

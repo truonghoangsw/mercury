@@ -12,6 +12,10 @@ import storage from "../../common/storage";
 import ws from "../../common/ws";
 import GameResult from "./GameResult";
 import TRex from "./TRex";
+import EndGameModal from "./EndGameModal";
+import Winner from "./Winner";
+import Loser from "./Loser";
+import CountDown from "./CountDown";
 
 const PlayGameForm = () => {
   const user = storage.getItem("user");

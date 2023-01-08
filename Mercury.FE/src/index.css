@@ -85,13 +85,24 @@
 }
 
 .home-page h1 {
+  font-size: 36px;
+  text-align: center;
+  color: #A43F0F;
+}
+
+.home-page h2 {
   font-weight: normal;
-  font-size: 28px;
+  font-size: 22px;
 }
 
 .home-page button:hover {
   background-color: #2B2561;
   font-weight: bold;
+}
+
+.home-page button:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 .home-page .input-group label, .home-page .input-group input {
@@ -117,5 +128,11 @@ img {
 
 .close-give-away {
   position: absolute !important;
-  right: 0
+  right: 0 }
+  
+
+.home-page button.btn-default {
+  color: #000000;
+  background-color: #ffffff;
+  border: 1px solid #000000;
 }
