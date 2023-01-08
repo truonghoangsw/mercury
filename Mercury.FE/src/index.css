@@ -144,3 +144,23 @@ img {
   background-color: #ffffff;
   border: 1px solid #000000;
 }
+
+.game-page .toolbar {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+}
+
+.game-page button {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  height: 40px;
+  background: #EE8C4B;
+  font-size: 16px;
+  color: #ffffff;
+  cursor: pointer;
+  min-width: 100px;
+  border-color: #8F3E2A;
+}
