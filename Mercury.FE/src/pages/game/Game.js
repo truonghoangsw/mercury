@@ -1,18 +1,15 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
-import Container from '@mui/material/Container';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import {GAME_STATE} from '../../common/constants';
 import TRex from './TRex';
 import ws from '../../common/ws';
 import storage from '../../common/storage';
+import Winner from './Winner';
+import Loser from './Loser';
 import GameResult from './GameResult';
 import {useNavigate} from 'react-router-dom';
+import CountDown from './CountDown';
+import EndGameModal from './EndGameModal';
 
 function Game({user, gameData, setGameData}) {
   const runnerRef = useRef(null);
@@ -21,11 +18,22 @@ function Game({user, gameData, setGameData}) {
   });
   const navigate = useNavigate();
 
-  const [open, setOpen] = React.useState(false);
-  const [openErrorModal, setOpenErrorModal] = React.useState(false);
-  const [errorMsg, setErrorMsg] = React.useState("");
+  const [openEndGameModal, setOpenEndGameModal] = React.useState(false);
 
-  const handleClose = () => setOpen(false)
+  const handleClose = useCallback(() => {
+    setOpenEndGameModal(false);
+  }, []);
+
+  const handleReplay = useCallback(() => {
+    setOpenEndGameModal(false);
+    const roomId = storage.getItem('roomId');
+    const currentGameId = storage.getItem('currentGameId');
+    ws.invoke('ReplayMatch', {
+      roomId,
+      currentGameId,
+    });
+  }, []);
+
   const userId = user?.playerId;
 
   const onGameOver = useCallback((data) => {
@@ -34,28 +42,21 @@ function Game({user, gameData, setGameData}) {
         ...data.room,
         winnerId: data.winnerId,
       };
+      console.log(data);
       if (!data?.isEndMatch) {
         data.startTime = new Date().getTime();
-        setOpen(true);
+      } else {
+        setOpenEndGameModal(true);
       }
     }
-    setGameData(data);
+    setGameData(prevData => ({
+      ...prevData,
+      ...data,
+    }));
     if (runnerRef.current) {
       runnerRef.current.gameOver(true);
     }
   }, [userId]);
-
-  const onErrorMessage = useCallback((data) => {
-    setOpenErrorModal(true);
-    setErrorMsg(data);
-  }, []);
-
-  useEffect(() => {
-    ws.on("ErrorMessage", onErrorMessage);
-    return () => {
-      ws.off('ErrorMessage', onErrorMessage);
-    };
-  }, [onErrorMessage]);
 
   const onThisGameOver = useCallback(() => {
     const roomId = storage.getItem('roomId');
@@ -65,8 +66,8 @@ function Game({user, gameData, setGameData}) {
   }, []);
 
   useEffect(() => {
-    const { Runner } = window;
-    runnerRef.current = new Runner(".interstitial-wrapper", undefined, {
+    const {Runner} = window;
+    runnerRef.current = new Runner('.interstitial-wrapper', undefined, {
       onGameOver: onThisGameOver,
     });
   }, [onThisGameOver]);
@@ -78,23 +79,13 @@ function Game({user, gameData, setGameData}) {
     };
   }, [onGameOver]);
 
-  const onBlur = useCallback(() => {
-    setOpen(true);
-    window.removeEventListener("blur", onBlur);
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener("blur", onBlur);
-    return;
-  }, []);
-
   useEffect(() => {
     setTimeout(() => {
       if (runnerRef.current) {
         runnerRef.current.start();
         setGameState(GAME_STATE.PLAYING);
       }
-    }, 3000);
+    }, 5000);
   }, []);
 
   useEffect(() => {
@@ -103,8 +94,8 @@ function Game({user, gameData, setGameData}) {
     }
   }, [navigate, gameData]);
 
-  const onPlayerDisconnect = useCallback((data) => {
-    setOpen(true);
+  const onPlayerDisconnect = useCallback(() => {
+    setOpenEndGameModal(true);
   }, []);
 
   useEffect(() => {
@@ -116,70 +107,34 @@ function Game({user, gameData, setGameData}) {
 
   return (
     <React.Fragment>
-      <CssBaseline />
-      <Container maxWidth="sm" style={{ height: '100vh' }}>
-        <div 
-          className="game-page"
-          style={{ 
-            height: '100vh',
-            display: 'flex'
-          }}
-        >
+      <CssBaseline/>
+      <div className="game-page">
+        <div className="game-container">
           <GameResult gameData={gameData} userId={userId}/>
           {
-            gameState === GAME_STATE.NOT_START &&
-            <div>Game win start in 3 seconds</div>
+            (gameState === GAME_STATE.NOT_START || gameState === GAME_STATE.RE_STARTING) &&
+            <CountDown/>
           }
           <TRex/>
-          <button onClick={() => setOpen(true)}>Open modal</button>
+          {
+            gameState === GAME_STATE.RE_STARTING && gameData?.winnerId === userId &&
+            <Winner/>
+          }
+          {
+            gameState === GAME_STATE.RE_STARTING && gameData?.winnerId !== userId &&
+            <Loser/>
+          }
         </div>
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-          maxWidth={'xs'}
-          fullWidth={true}
-        >
-          <DialogTitle id="alert-dialog-title">
-            Game end!
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              Please take next action.
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button variant="outlined" onClick={handleClose}>Go back home</Button>
-            <Button variant="outlined" onClick={handleClose}>
-              Continue
-            </Button>
-          </DialogActions>
-        </Dialog>
-        <Dialog
-          open={openErrorModal}
-          onClose={handleClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-          maxWidth={'xs'}
-          fullWidth={true}
-        >
-          <DialogTitle id="alert-dialog-title">
-            Error!!
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              {errorMsg}
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button variant="outlined" onClick={handleClose}>Go back home</Button>
-          </DialogActions>
-        </Dialog>
-      </Container>
+      </div>
+      <EndGameModal
+        userId={userId}
+        gameData={gameData}
+        open={openEndGameModal}
+        handleReplay={handleReplay}
+        handleClose={handleClose}
+      />
     </React.Fragment>
-
   );
 }
 
-export default Game;
+export default React.memo(Game);

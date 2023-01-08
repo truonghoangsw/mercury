@@ -1,13 +1,41 @@
-.interstitial-wrapper {
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+.game-page {
+  width: 100%;
+  height: 100%;
+  padding-top: 160px;
+  background: url("./assets/bg2.jpg");
+  background-size: cover;
+}
+
+.game-container {
   width: 100%;
   max-width: 600px;
   margin: auto;
+  border: 5px solid #670D37;
+  padding: 5px;
+  background: #f0f0f0;
+  position: relative;
 }
 
 .result {
-  position: fixed;
+  position: absolute;
   top: 50%;
   left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.game-result {
+  display: flex;
+  justify-content: space-between;
+}
+
+.game-result .player-name {
+  font-weight: bold;
+  font-size: 22px;
 }
 
 .winner {
@@ -16,4 +44,22 @@
 
 .loser {
   color: red;
+}
+
+.second-user {
+  text-align: right;
+}
+
+.count-down {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 32px;
+  font-weight: bold;
+  color: #29215A;
+}
+
+#main-content {
+  display: none;
 }

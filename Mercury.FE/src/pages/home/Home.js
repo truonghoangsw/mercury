@@ -1,9 +1,8 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import ws from '../../common/ws';
 import EnterRoom from './EnterRoom';
-import UserNameForm from "../../Component/UserNameForm";
 
-function Home({ user, isConnected }) {
+function Home({user}) {
   const [username, setUsername] = useState('');
   const [isShowEnterRoom, setIsShowEnterRoom] = useState(false);
   const [roomId, setRoomId] = useState('');
@@ -48,7 +47,41 @@ function Home({ user, isConnected }) {
 
   return (
     <div className="home-page">
-      <UserNameForm user={user} isConnected={isConnected} />
+      {
+        !!user &&
+        <>
+          <h1>Hello {user.name}</h1>
+          {
+            !isShowEnterRoom && !roomId &&
+            <>
+              <button onClick={createRoom}>Create Room</button>
+              <button onClick={showEnterRoom}>Enter Room</button>
+            </>
+          }
+          {
+            !isShowEnterRoom && !!roomId &&
+            <>
+              <p>Your room ID: {roomId}</p>
+            </>
+          }
+          {
+            isShowEnterRoom &&
+            <EnterRoom userId={userId}/>
+          }
+        </>
+      }
+      {
+        !user &&
+        <form action="" method="post" onSubmit={onSubmit}>
+          <input
+            name="username"
+            placeholder="Username"
+            value={username}
+            onChange={onInputChange}
+          />
+          <button type="submit">Start</button>
+        </form>
+      }
     </div>
   );
 }
