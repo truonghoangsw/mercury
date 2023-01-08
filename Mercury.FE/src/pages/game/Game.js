@@ -51,8 +51,8 @@ function Game({user, gameData, setGameData}) {
   }, []);
 
   useEffect(() => {
-    const {Runner} = window;
-    runnerRef.current = new Runner('.interstitial-wrapper', undefined, {
+    const { Runner } = window;
+    runnerRef.current = new Runner(".interstitial-wrapper", undefined, {
       onGameOver: onThisGameOver,
     });
   }, [onThisGameOver]);
@@ -127,4 +127,4 @@ function Game({user, gameData, setGameData}) {
   );
 }
 
-export default React.memo(Game);
+export default Game;
