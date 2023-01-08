@@ -11,6 +11,7 @@ namespace Mercury.API.Models
             RoomId = Guid.NewGuid();
             Players = new ConcurrentDictionary<Guid, Score>();
             CurrentGameId = 0;
+            IsEndMatch = false;
         }
 
         public Guid RoomId { get; set; }
@@ -21,7 +22,6 @@ namespace Mercury.API.Models
         public static Room Create()
         {
             var room = new Room();
-            DataMemory.Rooms.TryAdd(room.RoomId, room);
             return room;
         }
 
