@@ -174,7 +174,7 @@ namespace Mercury.API.SignIrServices
                 }
                 
                 winner.PointInCurrentSet++;
-                if (winner.PointInCurrentSet >= 2)
+                if (winner.PointInCurrentSet >= 1)
                 {
                     winner.WinSet++;
                     winner.PointInCurrentSet = 0;
