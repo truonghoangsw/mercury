@@ -5,10 +5,34 @@ using System.Collections.Concurrent;
 
 namespace Mercury.API.SignIrServices
 {
+    
     public partial class HubSockets : Hub
     {
-        public object _lockObject = new();
+        public object _waitingPlayerLock = new();
         public Player? WaitingPlayer { get; set; }
+
+        public override async Task OnDisconnectedAsync(Exception? exception)
+        {
+            var playerDis = DataMemory.Users.Values.FirstOrDefault(s => s.ConnectionId == Context.ConnectionId);
+
+            if (playerDis?.RoomId.HasValue != true) return;
+
+            if (!DataMemory.Rooms.TryGetValue(playerDis!.RoomId!.Value, out var room))
+            {
+                return;
+            }
+
+            room.Players.TryRemove(playerDis.PlayerId, out _);
+
+            room.Reset();
+
+            await Clients.Group(room.RoomId.ToString()).SendAsync("PlayerDisconnect", playerDis);
+
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, room.RoomId.ToString());
+
+            await base.OnDisconnectedAsync(exception);
+        }
+        
         public async Task CreateRoom(EnterRoomModel model)
         {
             if (!DataMemory.Users.TryGetValue(model.UserId, out var player))
@@ -25,26 +49,40 @@ namespace Mercury.API.SignIrServices
             await Clients.Group(room.RoomId.ToString())
                 .SendAsync(nameof(CreateRoom), room);
         }
-
+        
         public async Task EnterRoom(EnterRoomModel model)
         {
-            if (!DataMemory.Users.TryGetValue(model.UserId, out var player))
-            {
-                return;
-            }
-
             if (!DataMemory.Rooms.TryGetValue(model.RoomId, out var room))
             {
                 return;
             }
 
+            if (room.Players.Count > 2)
+            {
+                await Clients.Group(room.RoomId.ToString())
+                    .SendAsync("ErrorMessage", "Too many people in room");
+            }
+            
+            if (!DataMemory.Users.TryGetValue(model.UserId, out var player))
+            {
+                return;
+            }
+
+            if (player.RoomId.HasValue)
+            {
+                await Clients.Group(room.RoomId.ToString())
+                    .SendAsync("ErrorMessage", "Player already joined a room");
+            }
+            
+            player.JoinRoom(model.RoomId);
+            
             room.AddPlayer(player);
 
-            DataMemory.Rooms.TryAdd(room.RoomId,room);
+            DataMemory.Rooms.TryAdd(room.RoomId, room);
 
             await Groups.AddToGroupAsync(Context.ConnectionId, model.RoomId.ToString());
 
-            room.CurrentGameId++;
+            room.StartGame();
 
             await Clients.Group(room.RoomId.ToString())
                 .SendAsync("StartGame", room);
@@ -57,11 +95,16 @@ namespace Mercury.API.SignIrServices
                 return;
             }
 
-            if (model.CurrentGameId != room.CurrentGameId) return;
+            if (model.CurrentGameId != room.CurrentGameId)
+            {
+                await Clients.Group(room.RoomId.ToString())
+                    .SendAsync("ErrorMessage", "Invalid action");
+                return;
+            }
             
             room.Reset();
 
-            room.CurrentGameId++;
+            room.StartGame();
 
             await Clients.Group(room.RoomId.ToString())
                 .SendAsync("StartGame", room);
@@ -74,8 +117,10 @@ namespace Mercury.API.SignIrServices
                 return;
             }
 
-            if (room.CurrentGameId != model.CurrentGameId)
+            if (model.CurrentGameId != room.CurrentGameId)
             {
+                await Clients.Group(room.RoomId.ToString())
+                    .SendAsync("ErrorMessage", "Invalid action");
                 return;
             }
 
@@ -86,7 +131,7 @@ namespace Mercury.API.SignIrServices
 
             var winner = room.Players.Values.FirstOrDefault(x => x != loser);
 
-            winner.PointInCurrentSet++;
+            winner!.PointInCurrentSet++;
             if (winner.PointInCurrentSet >= 2)
             {
                 winner.WinSet++;
@@ -98,8 +143,8 @@ namespace Mercury.API.SignIrServices
                 }
             }
 
-            room.CurrentGameId++;
-            
+            room.StartGame();
+
             await Clients.Group(model.RoomId.ToString())
                 .SendAsync(nameof(GameOver), room);
         }
@@ -111,7 +156,7 @@ namespace Mercury.API.SignIrServices
                 return;
             }
             Room? room = null;
-            lock (_lockObject)
+            lock (_waitingPlayerLock)
             {
                 if (WaitingPlayer is null)
                 {
@@ -120,7 +165,6 @@ namespace Mercury.API.SignIrServices
                 }
                 else
                 {
-                    
                     if (!DataMemory.Users.TryGetValue(model.UserId, out var player_1))
                     {
                         return;
@@ -131,7 +175,6 @@ namespace Mercury.API.SignIrServices
                     DataMemory.Rooms.TryAdd(room.RoomId, room);
 
                 }
-
             }
 
             if (room is null) return;
