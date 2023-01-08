@@ -8,8 +8,8 @@ namespace Mercury.API.SignIrServices
     
     public partial class HubSockets : Hub
     {
-        public object _waitingPlayerLock = new();
-        public Player? WaitingPlayer { get; set; }
+        public static object _waitingPlayerLock = new();
+        public static Player? WaitingPlayer { get; set; }
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
