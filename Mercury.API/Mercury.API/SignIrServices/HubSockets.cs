@@ -87,7 +87,7 @@ namespace Mercury.API.SignIrServices
             var winner = room.Players.Values.FirstOrDefault(x => x != loser);
 
             winner.PointInCurrentSet++;
-            if (winner.PointInCurrentSet >= 5)
+            if (winner.PointInCurrentSet >= 2)
             {
                 winner.WinSet++;
                 winner.PointInCurrentSet = 0;
