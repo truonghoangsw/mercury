@@ -79,7 +79,7 @@ function Home({user, logout}) {
                   </span>
                   <span className="material-symbols-outlined" onClick={copyText}>
                     content_copy
-                  </span> 
+                  </span>
                   <button className="btn-default" type="button" onClick={clearRoomId}>Back</button>
                 </div>
             }
