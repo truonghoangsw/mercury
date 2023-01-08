@@ -20,7 +20,7 @@ namespace Mercury.API.SignIrServices
 
             room.AddPlayer(player);
 
-            await Groups.AddToGroupAsync(Context.ConnectionId, model.RoomId.ToString());
+            await Groups.AddToGroupAsync(Context.ConnectionId, room.RoomId.ToString());
 
             await Clients.Group(room.RoomId.ToString())
                 .SendAsync(nameof(CreateRoom), room);
