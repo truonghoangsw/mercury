@@ -22,6 +22,8 @@ function Game({user, gameData, setGameData}) {
   const navigate = useNavigate();
 
   const [open, setOpen] = React.useState(false);
+  const [openErrorModal, setOpenErrorModal] = React.useState(false);
+  const [errorMsg, setErrorMsg] = React.useState("");
 
   const handleClose = () => setOpen(false)
   const userId = user?.playerId;
@@ -42,6 +44,18 @@ function Game({user, gameData, setGameData}) {
       runnerRef.current.gameOver(true);
     }
   }, [userId]);
+
+  const onErrorMessage = useCallback((data) => {
+    setOpenErrorModal(true);
+    setErrorMsg(data);
+  }, []);
+
+  useEffect(() => {
+    ws.on("ErrorMessage", onErrorMessage);
+    return () => {
+      ws.off('ErrorMessage', onErrorMessage);
+    };
+  }, [onErrorMessage]);
 
   const onThisGameOver = useCallback(() => {
     const roomId = storage.getItem('roomId');
@@ -64,6 +78,16 @@ function Game({user, gameData, setGameData}) {
     };
   }, [onGameOver]);
 
+  const onBlur = useCallback(() => {
+    setOpen(true);
+    window.removeEventListener("blur", onBlur);
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("blur", onBlur);
+    return;
+  }, []);
+
   useEffect(() => {
     setTimeout(() => {
       if (runnerRef.current) {
@@ -78,6 +102,17 @@ function Game({user, gameData, setGameData}) {
       navigate('/');
     }
   }, [navigate, gameData]);
+
+  const onPlayerDisconnect = useCallback((data) => {
+    setOpen(true);
+  }, []);
+
+  useEffect(() => {
+    ws.on("PlayerDisconnect", onPlayerDisconnect);
+    return () => {
+      ws.off('PlayerDisconnect', onPlayerDisconnect);
+    };
+  }, [onPlayerDisconnect]);
 
   return (
     <React.Fragment>
@@ -119,6 +154,26 @@ function Game({user, gameData, setGameData}) {
             <Button variant="outlined" onClick={handleClose}>
               Continue
             </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog
+          open={openErrorModal}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          maxWidth={'xs'}
+          fullWidth={true}
+        >
+          <DialogTitle id="alert-dialog-title">
+            Error!!
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              {errorMsg}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button variant="outlined" onClick={handleClose}>Go back home</Button>
           </DialogActions>
         </Dialog>
       </Container>
