@@ -32,6 +32,11 @@ namespace Mercury.API.SignIrServices
 
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, room.RoomId.ToString());
 
+            if (room?.Players?.Count == 0)
+            {
+                room.IsEndMatch = true;
+            }
+
             await base.OnDisconnectedAsync(exception);
         }
         
@@ -76,7 +81,14 @@ namespace Mercury.API.SignIrServices
                     .SendAsync("ErrorMessage", "Player already joined a room");
                 return;
             }
-            
+
+            if (room.IsEndMatch)
+            {
+                await Clients.Group(room.RoomId.ToString())
+                    .SendAsync("ErrorMessage", "Game already done");
+                return;
+            }
+
             bool isInvalid = false;
             lock (room)
             {
