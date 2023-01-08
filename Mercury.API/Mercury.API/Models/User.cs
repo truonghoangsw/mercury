@@ -40,15 +40,6 @@ namespace Mercury.API.Models
                 player.Value.PointInCurrentSet = 0;
             }
         }
-
-        private object _lockCurrentGameId = new();
-        public void StartGame()
-        {
-            lock (_lockCurrentGameId)
-            {
-                CurrentGameId++;
-            }
-        }
     }
 
     public class Score

@@ -62,12 +62,6 @@ namespace Mercury.API.SignIrServices
                     .SendAsync("ErrorMessage", "Invalid room");
                 return;
             }
-
-            if (room.Players.Count > 2)
-            {
-                await Clients.Group(room.RoomId.ToString())
-                    .SendAsync("ErrorMessage", "Too many people in room");
-            }
             
             if (!DataMemory.Users.TryGetValue(model.UserId, out var player))
             {
@@ -83,15 +77,33 @@ namespace Mercury.API.SignIrServices
                 return;
             }
             
+            bool isInvalid = false;
+            lock (room)
+            {
+                if (room.Players.Count > 1)
+                {
+                    isInvalid = true;
+                }
+                else
+                {
+                    room.AddPlayer(player);
+                }
+            }
+
+            if (isInvalid)
+            {
+                await Clients.Group(room.RoomId.ToString())
+                       .SendAsync("ErrorMessage", "Too many people in room");
+                return;
+            }
+
             player.JoinRoom(model.RoomId);
-            
-            room.AddPlayer(player);
 
             DataMemory.Rooms.TryAdd(room.RoomId, room);
 
             await Groups.AddToGroupAsync(Context.ConnectionId, model.RoomId.ToString());
 
-            room.StartGame();
+            room.CurrentGameId++;
 
             await Clients.Group(room.RoomId.ToString())
                 .SendAsync("StartGame", room);
@@ -106,16 +118,19 @@ namespace Mercury.API.SignIrServices
                 return;
             }
 
-            if (model.CurrentGameId != room.CurrentGameId)
+            lock (room)
             {
-                await Clients.Group(room.RoomId.ToString())
-                    .SendAsync("ErrorMessage", "Invalid action");
-                return;
-            }
-            
-            room.Reset();
+                if (model.CurrentGameId != room.CurrentGameId)
+                {
+                    //await Clients.Group(room.RoomId.ToString())
+                    //    .SendAsync("ErrorMessage", "Invalid action");
+                    return;
+                }
 
-            room.StartGame();
+                room.Reset();
+
+                room.CurrentGameId++;
+            }
 
             await Clients.Group(room.RoomId.ToString())
                 .SendAsync("StartGame", room);
@@ -132,8 +147,8 @@ namespace Mercury.API.SignIrServices
 
             if (model.CurrentGameId != room.CurrentGameId)
             {
-                await Clients.Group(room.RoomId.ToString())
-                    .SendAsync("ErrorMessage", "Invalid action");
+                //await Clients.Group(room.RoomId.ToString())
+                //    .SendAsync("ErrorMessage", "Invalid action");
                 return;
             }
 
@@ -146,19 +161,33 @@ namespace Mercury.API.SignIrServices
 
             var winner = room.Players.Values.FirstOrDefault(x => x != loser);
 
-            winner!.PointInCurrentSet++;
-            if (winner.PointInCurrentSet >= 2)
+            if (winner is null)
             {
-                winner.WinSet++;
-                winner.PointInCurrentSet = 0;
-                loser.PointInCurrentSet = 0;
-                if (winner.WinSet >= 2)
-                {
-                    room.IsEndMatch = true;
-                }
+                await Clients.Caller
+                    .SendAsync("ErrorMessage", "Invalid player");
+                return;
             }
 
-            room.StartGame();
+            lock (room)
+            {
+                if (model.CurrentGameId != room.CurrentGameId)
+                {
+                    return;
+                }
+                
+                winner.PointInCurrentSet++;
+                if (winner.PointInCurrentSet >= 2)
+                {
+                    winner.WinSet++;
+                    winner.PointInCurrentSet = 0;
+                    loser.PointInCurrentSet = 0;
+                    if (winner.WinSet >= 2)
+                    {
+                        room.IsEndMatch = true;
+                    }
+                }
+                room.CurrentGameId++;
+            }
 
             await Clients.Group(model.RoomId.ToString())
                 .SendAsync(nameof(GameOver), new 
