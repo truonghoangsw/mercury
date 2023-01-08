@@ -36,6 +36,7 @@ function Game({user, gameData, setGameData}) {
       };
       if (!data?.isEndMatch) {
         data.startTime = new Date().getTime();
+        setOpen(true);
       }
     }
     setGameData(data);
@@ -101,7 +102,6 @@ function Game({user, gameData, setGameData}) {
             <Loser/>
           }
         </div>
-
         <Dialog
           open={open}
           onClose={handleClose}
@@ -110,7 +110,7 @@ function Game({user, gameData, setGameData}) {
           maxWidth={'xs'}
         >
           <DialogTitle id="alert-dialog-title">
-            You WIN!
+            Game end!
           </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
