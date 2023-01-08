@@ -25,11 +25,13 @@ function EnterRoom({userId}) {
   return (
     <>
       <form action="" method="post" onSubmit={onSubmit}>
-        <input
-          placeholder="RoomID"
-          value={roomId}
-          onChange={onRoomIdChane}
-        />
+        <div className="input-group">
+          <input
+            placeholder="RoomID"
+            value={roomId}
+            onChange={onRoomIdChane}
+          />
+        </div>
         <button type="submit">Join</button>
       </form>
     </>

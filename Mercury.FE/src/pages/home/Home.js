@@ -50,34 +50,41 @@ function Home({ user }) {
 
   return (
     <div className="home-page">
-      {!!user && (
-        <>
-          <h1>Hello {user.name}</h1>
-          {!isShowEnterRoom && !roomId && (
-            <>
-              <button onClick={createRoom}>Create Room</button>
-              <button onClick={showEnterRoom}>Enter Room</button>
-            </>
-          )}
-          {!isShowEnterRoom && !!roomId && (
-            <>
-              <p>Your room ID: {roomId}</p>
-            </>
-          )}
-          {isShowEnterRoom && <EnterRoom userId={userId} />}
-        </>
-      )}
-      {!user && (
-        <form action="" method="post" onSubmit={onSubmit}>
-          <input
-            name="username"
-            placeholder="Username"
-            value={username}
-            onChange={onInputChange}
-          />
-          <button type="submit">Start</button>
-        </form>
-      )}
+      <div className="game-container">
+        {!!user && (
+          <>
+            <h1>
+              Hello <strong>{user.name}</strong>,
+            </h1>
+            {!isShowEnterRoom && !roomId && (
+              <>
+                <button onClick={createRoom}>Create Room</button>
+                <button onClick={showEnterRoom}>Enter Room</button>
+              </>
+            )}
+            {!isShowEnterRoom && !!roomId && (
+              <>
+                <p>Your room ID: {roomId}</p>
+              </>
+            )}
+            {isShowEnterRoom && <EnterRoom userId={userId} />}
+          </>
+        )}
+        {!user && (
+          <form action="" method="post" onSubmit={onSubmit}>
+            <h1>Welcome,</h1>
+            <p>Please input your username to continue:</p>
+            <div className="input-group">
+              <input
+                name="username"
+                value={username}
+                onChange={onInputChange}
+              />
+            </div>
+            <button type="submit">Start</button>
+          </form>
+        )}
+      </div>
     </div>
   );
 }
