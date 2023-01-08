@@ -10,12 +10,15 @@ namespace Mercury.API.Models
         {
             RoomId = Guid.NewGuid();
             Players = new ConcurrentDictionary<Guid, Score>();
+            CurrentGameId = 0;
         }
 
         public Guid RoomId { get; set; }
         public ConcurrentDictionary<Guid, Score> Players { get; set; }
         public string GroupSocketId { get; set; }
-
+        public int CurrentGameId { get; set; }
+        public bool IsEndMatch { get;set;}
+        
         public static Room Create()
         {
             var room = new Room();
@@ -26,6 +29,16 @@ namespace Mercury.API.Models
         public void AddPlayer(Player player)
         {
             Players.TryAdd(player.PlayerId, new Score(player));
+        }
+
+        internal void Reset()
+        {
+            IsEndMatch = false;
+            foreach (var player in Players)
+            {
+                player.Value.WinSet = 0;
+                player.Value.PointInCurrentSet = 0;
+            }
         }
     }
 

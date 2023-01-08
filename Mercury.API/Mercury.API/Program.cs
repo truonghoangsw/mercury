@@ -1,4 +1,5 @@
 using Mercury.API.SignIrServices;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,8 +8,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR().AddJsonProtocol(o =>
 {
-    o.PayloadSerializerOptions.PropertyNamingPolicy = null;
-    
+    o.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+
+
 });
 var app = builder.Build();
 

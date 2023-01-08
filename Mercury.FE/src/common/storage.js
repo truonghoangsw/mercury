@@ -12,7 +12,7 @@ const storage = (() => {
       data = JSON.parse(data);
       return data;
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
     return data;
   };

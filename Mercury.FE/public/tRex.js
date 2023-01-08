@@ -4,15 +4,17 @@
    * T-Rex runner.
    * @param {string} outerContainerId Outer containing element id.
    * @param {Object} opt_config
+   * @param options
    * @constructor
    * @export
    */
-  function Runner(outerContainerId, opt_config) {
+  function Runner(outerContainerId, opt_config, options = null) {
     // // Singleton
     // if (Runner.instance_) {
     //     return Runner.instance_;
     // }
     // Runner.instance_ = this;
+    this.options = options;
 
     this.outerContainerEl = document.querySelector(outerContainerId);
     this.containerEl = null;
@@ -356,6 +358,7 @@
 
       this.containerEl = document.createElement('div');
       this.containerEl.className = Runner.classes.CONTAINER;
+      this.containerEl.style.width = this.dimensions.WIDTH + 'px';
 
       // Player canvas container.
       this.canvas = createCanvas(this.containerEl, this.dimensions.WIDTH,
@@ -421,10 +424,10 @@
         boxStyles.paddingLeft.length - 2));
 
       this.dimensions.WIDTH = this.outerContainerEl.offsetWidth - padding * 2;
-      this.dimensions.WIDTH = Math.min(DEFAULT_WIDTH, this.dimensions.WIDTH); //Arcade Mode
-      if (this.activated) {
-        this.setArcadeModeContainerScale();
-      }
+      // this.dimensions.WIDTH = Math.min(DEFAULT_WIDTH, this.dimensions.WIDTH); //Arcade Mode
+      // if (this.activated) {
+      //   this.setArcadeModeContainerScale();
+      // }
 
       // Redraw the elements back onto the canvas.
       if (this.canvas) {
@@ -761,7 +764,7 @@
     /**
      * Game over state.
      */
-    gameOver: function () {
+    gameOver: function (isWinner = false) {
       this.playSound(this.soundFx.HIT);
       vibrate(200);
 
@@ -771,13 +774,15 @@
 
       this.tRex.update(100, Trex.status.CRASHED);
 
-      // Game over panel.
-      if (!this.gameOverPanel) {
-        this.gameOverPanel = new GameOverPanel(this.canvas,
-          this.spriteDef.TEXT_SPRITE, this.spriteDef.RESTART,
-          this.dimensions);
-      } else {
-        this.gameOverPanel.draw();
+      if (!isWinner) {
+        // Game over panel.
+        if (!this.gameOverPanel) {
+          this.gameOverPanel = new GameOverPanel(this.canvas,
+            this.spriteDef.TEXT_SPRITE, this.spriteDef.RESTART,
+            this.dimensions);
+        } else {
+          this.gameOverPanel.draw();
+        }
       }
 
       // Update the high score.
@@ -788,6 +793,14 @@
 
       // Reset the time clock.
       this.time = getTimeStamp();
+
+      if (this.options && this.options.onGameOver && !this.isGameOver) {
+        this.options.onGameOver({
+          distanceRan: this.distanceRan,
+          isWinner,
+        });
+      }
+      this.isGameOver = true;
     },
 
     stop: function () {
@@ -848,13 +861,14 @@
      */
     setArcadeMode() {
       document.body.classList.add(Runner.classes.ARCADE_MODE);
-      this.setArcadeModeContainerScale();
+      // this.setArcadeModeContainerScale();
     },
 
     /**
      * Sets the scaling for arcade mode.
      */
     setArcadeModeContainerScale() {
+      console.trace();
       const windowHeight = window.innerHeight;
       const scaleHeight = windowHeight / this.dimensions.HEIGHT;
       const scaleWidth = window.innerWidth / this.dimensions.WIDTH;
@@ -868,8 +882,9 @@
         window.devicePixelRatio;
 
       const cssScale = scale;
-      this.containerEl.style.transform =
-        'scale(' + cssScale + ') translateY(' + translateY + 'px)';
+      // this.containerEl.style.transform =
+      //   'scale(' + cssScale + ') translateY(' + translateY + 'px)';
+      this.containerEl.style.transform = 'scale(' + cssScale + ')';
     },
 
     /**

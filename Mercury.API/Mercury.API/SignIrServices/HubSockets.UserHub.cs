@@ -10,12 +10,8 @@ namespace Mercury.API.SignIrServices
 {
     public partial class HubSockets : Hub
     {
-      
-        //public async Task GetUsersById(Guid id)
-        //{
-        //    await Clients.Caller.SendAsync("GetUsers", DataMemory.Users.FirstOrDefault(p => p.PlayerId == id));
-        //}
-     
+
+
         public async Task AddUser(string userName)
         {
             var player = new Player
