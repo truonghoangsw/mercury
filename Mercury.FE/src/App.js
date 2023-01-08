@@ -12,6 +12,7 @@ function App() {
   const init = useCallback(async () => {
     await ws.start();
     const savedUser = storage.getItem("user");
+    console.log("savedUser", savedUser);
     if (savedUser) {
       ws.invoke("AddUser", savedUser.Name).catch((error) => {
         console.error(error);
@@ -22,13 +23,16 @@ function App() {
 
   const onAddUserResponse = useCallback((payload) => {
     storage.setItem("user", payload);
+    storage.setItem("userName", payload.userName);
     setUser(payload);
   }, []);
 
+  console.log("isConnected", isConnected);
+
   useEffect(() => {
-    ws.on("addUser", onAddUserResponse);
+    ws.on("AddUser", onAddUserResponse);
     return () => {
-      ws.off("addUser", onAddUserResponse);
+      ws.off("AddUser", onAddUserResponse);
     };
   }, [onAddUserResponse]);
 
@@ -42,13 +46,9 @@ function App() {
       });
   }, [init]);
 
-  if (!isConnected) {
-    return "Connecting...";
-  }
-
   return (
     <Routes>
-      <Route path="/" element={<Home user={user} />} />
+      <Route path="/" element={<Home user={user} conected={isConnected} />} />
       <Route path="/play" element={<Game user={user} />} />
     </Routes>
   );

@@ -1,6 +1,9 @@
 const storage = (() => {
   const setItem = (key, data) => {
-    localStorage.setItem(key, data && typeof data === 'object' ? JSON.stringify(data) : data);
+    localStorage.setItem(
+      key,
+      data && typeof data === "object" ? JSON.stringify(data) : data
+    );
   };
 
   const getItem = (key) => {
@@ -26,4 +29,3 @@ const storage = (() => {
 })();
 
 export default storage;
-

@@ -1,8 +1,58 @@
-import { useRef } from "react";
+import {
+  default as React,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useNavigate,
+} from "react";
+import ws from "../../common/ws";
+import storage from "../../common/storage";
 import "./styles.scss";
 
-const PlayGameForm = () => {
-  const userNameRef = useRef();
+const PlayGameForm = (props) => {
+  const curUser = storage.getItem("user");
+  console.log("user", curUser);
+  const userId = curUser.userId;
+  const navigate = useNavigate();
+  const [isShowEnterRoom, setIsShowEnterRoom] = useState(false);
+  const [roomId, setRoomId] = useState("");
+  const createRoom = useCallback(() => {
+    ws.invoke("CreateRoom", { userId }).catch((error) => {
+      console.error(error);
+      alert("Error: " + error.message);
+    });
+  }, [userId]);
+
+  const showEnterRoom = useCallback(() => {
+    setIsShowEnterRoom(true);
+  }, []);
+
+  useEffect(() => {
+    const onCreateRoom = (payload) => {
+      setRoomId(payload.RoomId);
+    };
+    ws.on("CreateRoom", onCreateRoom);
+    return () => {
+      ws.off("CreateRoom", onCreateRoom);
+    };
+  }, []);
+
+  useEffect(() => {
+    const onEnterRoom = (payload) => {
+      if (isShowEnterRoom) {
+        return;
+      }
+      storage.setItem("roomId", roomId);
+      navigate("/play");
+    };
+    ws.on("EnterRoom", onEnterRoom);
+    return () => {
+      ws.off("EnterRoom", onEnterRoom);
+    };
+  }, [roomId, navigate, isShowEnterRoom]);
+
+  console.log("enter play game form");
   return (
     <div class="login-box">
       <p style={{ fontSize: 25, color: " #03e9f4", fontWeight: 900 }}>
