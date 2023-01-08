@@ -34,9 +34,6 @@
   background: transparent;
 }
 .login-box .user-box label {
-  position: absolute;
-  top: 0;
-  left: 0;
   padding: 10px 0;
   font-size: 16px;
   color: #fff;
@@ -156,4 +153,21 @@
   100% {
     bottom: 100%;
   }
+}
+
+.user-form .MuiFormLabel-root,
+.user-form .MuiInput-input {
+  color: #fff;
+}
+
+.user-form .MuiFormLabel-root.Mui-focused {
+  color: #03e9f4
+}
+
+.user-form .MuiInputBase-root::before {
+  border-bottom: 1px solid white !important;
+}
+
+.user-form .MuiInputBase-root::after {
+  border-bottom: 1px solid #03e9f4 !important;
 }

@@ -1,5 +1,6 @@
 import { React, useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import TextField from '@mui/material/TextField';
 import storage from "../../common/storage";
 import ws from "../../common/ws";
 import "./styles.scss";
@@ -42,25 +43,19 @@ const UserNameForm = (props) => {
   return (
     <div>
       {isConnected ? (
-        <div class="login-box">
+        <div className="login-box">
           <p style={{ fontSize: 25, color: " #03e9f4", fontWeight: 900 }}>
             MECURY's T'rex Runner{" "}
           </p>
           <h2>Please enter your Username to start!</h2>
-          <form style={{ alignItems: "center", justifyContent: "center" }}>
-            <div class="user-box" style={{ marginTop: 20 }}>
-              <input
-                type="text"
-                name=""
-                required=""
-                onChange={onInputChange}
-                ref={inputRef}
-                value={userName}
-              />
-              <label style={{ fontSize: 20, marginBottom: 20 }}>
-                User name
-              </label>
-            </div>
+          <form className="user-form" style={{ alignItems: "center", justifyContent: "center" }}>
+            <TextField 
+              label="User name"
+              variant="standard"
+              onChange={onInputChange}
+              value={userName}
+              fullWidth 
+            />
             <a href="#">
               <div onClick={onSubmit} disabled={!userName}>
                 <span></span>
