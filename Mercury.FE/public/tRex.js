@@ -356,6 +356,7 @@
 
       this.containerEl = document.createElement('div');
       this.containerEl.className = Runner.classes.CONTAINER;
+      this.containerEl.style.width = this.dimensions.WIDTH + 'px';
 
       // Player canvas container.
       this.canvas = createCanvas(this.containerEl, this.dimensions.WIDTH,
@@ -421,10 +422,10 @@
         boxStyles.paddingLeft.length - 2));
 
       this.dimensions.WIDTH = this.outerContainerEl.offsetWidth - padding * 2;
-      this.dimensions.WIDTH = Math.min(DEFAULT_WIDTH, this.dimensions.WIDTH); //Arcade Mode
-      if (this.activated) {
-        this.setArcadeModeContainerScale();
-      }
+      // this.dimensions.WIDTH = Math.min(DEFAULT_WIDTH, this.dimensions.WIDTH); //Arcade Mode
+      // if (this.activated) {
+      //   this.setArcadeModeContainerScale();
+      // }
 
       // Redraw the elements back onto the canvas.
       if (this.canvas) {
@@ -848,13 +849,14 @@
      */
     setArcadeMode() {
       document.body.classList.add(Runner.classes.ARCADE_MODE);
-      this.setArcadeModeContainerScale();
+      // this.setArcadeModeContainerScale();
     },
 
     /**
      * Sets the scaling for arcade mode.
      */
     setArcadeModeContainerScale() {
+      console.trace();
       const windowHeight = window.innerHeight;
       const scaleHeight = windowHeight / this.dimensions.HEIGHT;
       const scaleWidth = window.innerWidth / this.dimensions.WIDTH;
@@ -868,8 +870,9 @@
         window.devicePixelRatio;
 
       const cssScale = scale;
-      this.containerEl.style.transform =
-        'scale(' + cssScale + ') translateY(' + translateY + 'px)';
+      // this.containerEl.style.transform =
+      //   'scale(' + cssScale + ') translateY(' + translateY + 'px)';
+      this.containerEl.style.transform = 'scale(' + cssScale + ')';
     },
 
     /**
