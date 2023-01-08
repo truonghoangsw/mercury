@@ -3,7 +3,7 @@ import ws from '../../common/ws';
 import EnterRoom from './EnterRoom';
 import AutoMatch from '../game/AutoMatch';
 
-function Home({user, logout}) {
+function Home({user, logout, onStartGame}) {
   const [username, setUsername] = useState('');
   const [isShowEnterRoom, setIsShowEnterRoom] = useState(false);
   const [roomId, setRoomId] = useState('');
@@ -67,7 +67,7 @@ function Home({user, logout}) {
               <>
                 <button onClick={createRoom}>Create Room</button>
                 <button onClick={showEnterRoom}>Enter Room</button>
-                <AutoMatch userId={userId}/>
+                <AutoMatch userId={userId} onStartGame={onStartGame}/>
                 <button className="btn-default" type="button" onClick={logout}>Logout</button>
               </>
             }

@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import ws from '../../common/ws';
 
-function AutoMatch({userId}) {
+function AutoMatch({userId, onStartGame}) {
   const [isAutoMapping, setIsAutoMapping] = useState(false);
 
   const handleAutoMatch = useCallback(() => {
@@ -12,14 +12,11 @@ function AutoMatch({userId}) {
   }, [userId]);
 
   useEffect(() => {
-    const handler = (data) => {
-      console.log(data);
-    };
-    ws.on('AutoMatch', handler);
+    ws.on('AutoMatch', onStartGame);
     return () => {
       ws.off('AutoMatch');
     };
-  }, []);
+  }, [onStartGame]);
 
   return (
     <button
