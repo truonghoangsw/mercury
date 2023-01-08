@@ -1,12 +1,12 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import ws from '../../common/ws';
-import EnterRoom from './EnterRoom';
-import AutoMatch from '../game/AutoMatch';
+import React, { useCallback, useEffect, useState } from "react";
+import ws from "../../common/ws";
+import EnterRoom from "./EnterRoom";
+import AutoMatch from "../game/AutoMatch";
 
-function Home({user, logout}) {
-  const [username, setUsername] = useState('');
+function Home({ user, logout }) {
+  const [username, setUsername] = useState("");
   const [isShowEnterRoom, setIsShowEnterRoom] = useState(false);
-  const [roomId, setRoomId] = useState('');
+  const [roomId, setRoomId] = useState("");
 
   const userId = user?.playerId;
 
@@ -14,21 +14,24 @@ function Home({user, logout}) {
     setUsername(event.target.value);
   }, []);
 
-  const onSubmit = useCallback((event) => {
-    event.preventDefault();
-    if (!username) {
-      return;
-    }
-    ws.invoke('AddUser', username).catch((error) => {
-      console.error(error);
-      alert('Error: ' + error.message);
-    });
-  }, [username]);
+  const onSubmit = useCallback(
+    (event) => {
+      event.preventDefault();
+      if (!username) {
+        return;
+      }
+      ws.invoke("AddUser", username).catch((error) => {
+        console.error(error);
+        alert("Error: " + error.message);
+      });
+    },
+    [username]
+  );
 
   const createRoom = useCallback(() => {
-    ws.invoke('CreateRoom', {userId}).catch((error) => {
+    ws.invoke("CreateRoom", { userId }).catch((error) => {
       console.error(error);
-      alert('Error: ' + error.message);
+      alert("Error: " + error.message);
     });
   }, [userId]);
 
@@ -40,48 +43,56 @@ function Home({user, logout}) {
     const onCreateRoom = (payload) => {
       setRoomId(payload.roomId);
     };
-    ws.on('CreateRoom', onCreateRoom);
+    ws.on("CreateRoom", onCreateRoom);
     return () => {
-      ws.off('CreateRoom', onCreateRoom);
+      ws.off("CreateRoom", onCreateRoom);
     };
   }, []);
 
   const clearRoomId = useCallback(() => {
-    setRoomId('');
+    setRoomId("");
   }, []);
 
   return (
     <div className="home-page">
       <div className="game-container">
-        {
-          !!user &&
+        {!!user && (
           <>
             <h1>Mercury 88</h1>
-            <h2>Hello <strong>{user.name}</strong>,</h2>
-            {
-              !isShowEnterRoom && !roomId &&
+            <h2>
+              Hello <strong>{user.name}</strong>,
+            </h2>
+            {!isShowEnterRoom && !roomId && (
               <>
                 <button onClick={createRoom}>Create Room</button>
                 <button onClick={showEnterRoom}>Enter Room</button>
-                <AutoMatch userId={userId}/>
-                <button className="btn-default" type="button" onClick={logout}>Logout</button>
+                <AutoMatch userId={userId} />
+                <button className="btn-default" type="button" onClick={logout}>
+                  Logout
+                </button>
               </>
-            }
-            {
-              !isShowEnterRoom && !!roomId &&
+            )}
+            {!isShowEnterRoom && !!roomId && (
               <>
                 <p>Your room ID: {roomId}</p>
-                <button className="btn-default" type="button" onClick={clearRoomId}>Back</button>
+                <button
+                  className="btn-default"
+                  type="button"
+                  onClick={clearRoomId}
+                >
+                  Back
+                </button>
               </>
-            }
-            {
-              isShowEnterRoom &&
-              <EnterRoom userId={userId} setIsShowEnterRoom={setIsShowEnterRoom}/>
-            }
+            )}
+            {isShowEnterRoom && (
+              <EnterRoom
+                userId={userId}
+                setIsShowEnterRoom={setIsShowEnterRoom}
+              />
+            )}
           </>
-        }
-        {
-          !user &&
+        )}
+        {!user && (
           <form action="" method="post" onSubmit={onSubmit}>
             <h1>Mercury 88</h1>
             <h2>Welcome,</h2>
@@ -95,7 +106,7 @@ function Home({user, logout}) {
             </div>
             <button type="submit">Start</button>
           </form>
-        }
+        )}
       </div>
     </div>
   );
