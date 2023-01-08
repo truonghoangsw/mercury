@@ -23,6 +23,12 @@ function App() {
     }
   }, []);
 
+  const logout = useCallback(() => {
+    localStorage.clear();
+    setUser(null);
+    setGameData(null);
+  }, []);
+
   const onAddUserResponse = useCallback((payload) => {
     storage.setItem("user", payload);
     storage.setItem("userName", payload.name);
@@ -75,7 +81,7 @@ function App() {
     <Routes>
       <Route
         path="/"
-        element={<Home user={user} isConnected={isConnected} />}
+        element={<Home user={user} isConnected={isConnected} logout={logout} />}
       />
       <Route
         path="/play"
