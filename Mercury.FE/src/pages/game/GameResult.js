@@ -20,19 +20,19 @@ function GameResult({gameData, userId}) {
   return (
     <div className="game-result">
       {
-        currentPlayer &&
-        <div className="first-user">
-          <div className="player-name">You</div>
-          <div>Win set: {currentPlayer?.winSet}</div>
-          <div>Win game: {currentPlayer?.pointInCurrentSet}</div>
-        </div>
-      }
-      {
         secondPlayer &&
-        <div className="second-user">
+        <div className="first-user">
           <div className="player-name">{secondPlayer?.name}</div>
           <div>Win set: {secondPlayer?.winSet}</div>
           <div>Win game: {secondPlayer?.pointInCurrentSet}</div>
+        </div>
+      }
+      {
+        currentPlayer &&
+        <div className="second-user">
+          <div className="player-name">You</div>
+          <div>Win set: {currentPlayer?.winSet}</div>
+          <div>Win game: {currentPlayer?.pointInCurrentSet}</div>
         </div>
       }
     </div>
