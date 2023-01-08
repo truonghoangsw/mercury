@@ -77,14 +77,14 @@ namespace Mercury.API.SignIrServices
 
             if (player.RoomId.HasValue)
             {
-                await Clients.Group(room.RoomId.ToString())
+                await Clients.Caller
                     .SendAsync("ErrorMessage", "Player already joined a room");
                 return;
             }
 
             if (room.IsEndMatch)
             {
-                await Clients.Group(room.RoomId.ToString())
+                await Clients.Caller
                     .SendAsync("ErrorMessage", "Game already done");
                 return;
             }
