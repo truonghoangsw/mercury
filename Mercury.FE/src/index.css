@@ -104,3 +104,11 @@
   line-height: 40px;
   padding: 0 10px;
 }
+
+.room-infor > span {
+  vertical-align: middle;
+}
+
+.material-symbols-outlined {
+  cursor: pointer;
+}

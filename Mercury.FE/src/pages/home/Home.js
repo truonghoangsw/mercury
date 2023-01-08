@@ -45,6 +45,11 @@ function Home({user}) {
     };
   }, []);
 
+  const copyText = () => {
+    // Copy the text inside the text field
+    navigator.clipboard.writeText(roomId);
+  }
+
   return (
     <div className="home-page">
       <div className="game-container">
@@ -60,10 +65,16 @@ function Home({user}) {
               </>
             }
             {
-              !isShowEnterRoom && !!roomId &&
-              <>
-                <p>Your room ID: {roomId}</p>
-              </>
+              !isShowEnterRoom && !!roomId && (
+                <div className='room-infor'>
+                  <span>
+                    Your room ID: {roomId}
+                  </span>
+                  <span className="material-symbols-outlined" onClick={copyText}>
+                    content_copy
+                  </span> 
+                </div>
+              )
             }
             {
               isShowEnterRoom &&
