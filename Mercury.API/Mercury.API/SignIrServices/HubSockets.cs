@@ -20,7 +20,7 @@ namespace Mercury.API.SignIrServices
 
             room.AddPlayer(player);
 
-            await Groups.AddToGroupAsync(Context.ConnectionId, model.RoomId.ToString());
+            await Groups.AddToGroupAsync(Context.ConnectionId, room.RoomId.ToString());
 
             await Clients.Group(room.RoomId.ToString())
                 .SendAsync(nameof(CreateRoom), room);
@@ -45,7 +45,7 @@ namespace Mercury.API.SignIrServices
             await Groups.AddToGroupAsync(Context.ConnectionId, model.RoomId.ToString());
 
             await Clients.Group(room.RoomId.ToString())
-                .SendAsync(nameof(EnterRoom), room.Players);
+                .SendAsync(nameof(EnterRoom), room);
         }
 
         public async Task StartGame(StartGameModel model)

@@ -1,7 +1,7 @@
 const ws = (function () {
   const {signalR} = window;
   const connection = new signalR.HubConnectionBuilder()
-  .withUrl("https://hackathon-2023-mercury.creativeforce-dev.io/all", {
+  .withUrl("wss://hackathon-2023-mercury.creativeforce-dev.io/socket", {
     skipNegotiation: true,
     transport: signalR.HttpTransportType.WebSockets
   })
@@ -20,8 +20,6 @@ const ws = (function () {
   connection.onclose(async () => {
     await start();
   });
-
-  start();
 
   return connection;
 })();
