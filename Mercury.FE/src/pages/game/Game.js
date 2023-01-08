@@ -11,8 +11,6 @@ import {GAME_STATE} from '../../common/constants';
 import TRex from './TRex';
 import ws from '../../common/ws';
 import storage from '../../common/storage';
-import Winner from './Winner';
-import Loser from './Loser';
 import GameResult from './GameResult';
 import {useNavigate} from 'react-router-dom';
 
@@ -84,23 +82,21 @@ function Game({user, gameData, setGameData}) {
   return (
     <React.Fragment>
       <CssBaseline />
-      <Container maxWidth="sm">
-        <div className="game-page">
+      <Container maxWidth="sm" style={{ height: '100vh' }}>
+        <div 
+          className="game-page"
+          style={{ 
+            height: '100vh',
+            display: 'flex'
+          }}
+        >
           <GameResult gameData={gameData} userId={userId}/>
           {
             gameState === GAME_STATE.NOT_START &&
             <div>Game win start in 3 seconds</div>
           }
           <TRex/>
-
-          {
-            gameState === GAME_STATE.RE_STARTING && gameData?.winnerId === userId &&
-            <Winner/>
-          }
-          {
-            gameState === GAME_STATE.RE_STARTING && gameData?.winnerId !== userId &&
-            <Loser/>
-          }
+          <button onClick={() => setOpen(true)}>Open modal</button>
         </div>
         <Dialog
           open={open}
@@ -108,6 +104,7 @@ function Game({user, gameData, setGameData}) {
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
           maxWidth={'xs'}
+          fullWidth={true}
         >
           <DialogTitle id="alert-dialog-title">
             Game end!
